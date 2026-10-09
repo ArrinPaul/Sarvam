@@ -117,7 +117,7 @@ export function AdminPage() {
                   className="text-bad-fg/70 hover:text-bad-fg"
                   aria-label="Dismiss error"
                 >
-                  <Icon name="Minus" size={14} />
+                  <Icon name="X" size={14} />
                 </button>
               </div>
             )}
@@ -247,6 +247,16 @@ export function AdminPage() {
             <span className="hidden sm:inline">Refresh</span>
           </button>
 
+          {user.role === "admin" ? (
+            <a
+              href="#/admin"
+              className="h-8 px-3 border border-border-hairline hover:bg-surface text-text-muted hover:text-text text-sm font-medium rounded-lg flex items-center gap-1.5 transition-colors"
+            >
+              <Icon name="ShieldCheck" size={14} aria-hidden />
+              <span className="hidden sm:inline">Admin console</span>
+            </a>
+          ) : null}
+
           <a
             href="#/workspace"
             className="h-8 px-3.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg flex items-center gap-1.5 transition-all shadow-sm"
@@ -272,7 +282,7 @@ export function AdminPage() {
               title="Sign Out"
               aria-label="Sign Out"
             >
-              <Icon name="Minus" size={14} />
+              <Icon name="LogOut" size={14} />
             </button>
           </div>
 

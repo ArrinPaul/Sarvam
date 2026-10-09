@@ -109,8 +109,8 @@ export function RunForm() {
     <form onSubmit={submit} noValidate className="flex flex-col gap-5" aria-label="Start a research run">
       <div className="flex items-center justify-between pb-3 border-b border-border-hairline">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-text">Start a research run</h2>
-          <p className="text-sm text-text-muted mt-0.5">Formulate a question for autonomous evidence synthesis</p>
+          <h2 className="text-xl font-bold tracking-tight text-text">Your question</h2>
+          <p className="text-sm text-text-muted mt-0.5">Ask for a decision, not a topic. Scope and mode come next.</p>
         </div>
       </div>
 

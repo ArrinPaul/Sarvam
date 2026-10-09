@@ -59,7 +59,7 @@ export function PlanTree({
                           .map((t) => (
                             <li key={t.id} className="flex items-start gap-2">
                               <Icon name="Search" size={14} className="mt-1 shrink-0 text-brand" aria-hidden />
-                              <span className="flex-1 text-[13px] leading-tight">
+                              <span className="flex-1 text-sm leading-snug">
                                 {t.query_text}
                               </span>
                               <Badge>{t.status ?? "pending"}</Badge>

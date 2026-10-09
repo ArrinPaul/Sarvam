@@ -88,7 +88,7 @@ export function RegisterPage() {
                 className="text-bad-fg/70 hover:text-bad-fg"
                 aria-label="Dismiss"
               >
-                <Icon name="Minus" size={14} />
+                <Icon name="X" size={14} />
               </button>
             </div>
           )}

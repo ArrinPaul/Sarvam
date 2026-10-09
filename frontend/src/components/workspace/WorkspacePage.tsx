@@ -88,6 +88,16 @@ export function WorkspacePage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {user.role === "admin" ? (
+            <a
+              href="#/admin"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-hairline hover:bg-surface text-text-muted hover:text-text text-sm font-medium rounded-lg transition-colors"
+            >
+              <Icon name="ShieldCheck" size={15} aria-hidden />
+              <span className="hidden sm:inline">Admin console</span>
+            </a>
+          ) : null}
+
           <a
             href="#/history"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-hairline hover:bg-surface text-text-muted hover:text-text text-sm font-medium rounded-lg transition-colors"
@@ -113,7 +123,7 @@ export function WorkspacePage() {
               title="Sign Out"
               aria-label="Sign Out"
             >
-              <Icon name="Minus" size={14} aria-hidden />
+              <Icon name="LogOut" size={14} aria-hidden />
             </button>
           </div>
 
