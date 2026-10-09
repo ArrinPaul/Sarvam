@@ -1,7 +1,8 @@
-import type { CoverageCell, Dimension, EvidenceSlot, Origin, Source } from "@contracts/types";
-import type { CellChange, RollupView, SlotStats } from "../components/CoverageMatrix";
+import type { CoverageCell, Dimension, EvidenceSlot, Origin, Source, DimensionRollup } from "@contracts/types";
+import type { CellChange, SlotStats } from "../components/CoverageMatrix";
 import type { OriginGroup } from "../components/OriginGroupView";
 import type { StopGap } from "../components/StopCard";
+import { gapTextForCell } from "../lib/gap";
 import type { RunView } from "./runStore";
 
 export function latestRound(v: RunView): number | null {
@@ -19,7 +20,7 @@ export function cellsForRound(v: RunView, round: number | null): CoverageCell[] 
   return round === null ? [] : (v.coverageByRound[round] ?? []);
 }
 
-export function rollupsForRound(v: RunView, round: number | null): RollupView[] {
+export function rollupsForRound(v: RunView, round: number | null): DimensionRollup[] {
   return round === null ? [] : (v.rollupsByRound[round] ?? []);
 }
 
@@ -121,7 +122,8 @@ export function worstCriticalSlots(v: RunView): StopGap[] {
     if (!s.critical) continue;
     const c = cells.get(s.id);
     if (c?.state === "GREEN") continue;
-    out.push({ slotId: s.id, name: s.name, reason: c ? c.reason : "No coverage data for this slot." });
+    const g = gapTextForCell(c);
+    out.push({ slotId: s.id, name: s.name, reason: g.reason, nextStep: g.next_step });
   }
   return out.sort((a, b) => {
     const ra = cells.get(a.slotId)?.state ?? "RED";

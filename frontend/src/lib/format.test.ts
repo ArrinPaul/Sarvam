@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { ageBucket, domainOf, formatSeconds, formatUsd, stateStyle } from "./format";
+import { ageBucket, domainOf, formatRunCost, formatSeconds, formatUsd, stateStyle } from "./format";
 
 const now = new Date("2026-06-01T00:00:00Z");
 
@@ -16,8 +16,8 @@ test("domainOf, formatters, stateStyle", () => {
   expect(domainOf("not a url")).toBe("not a url");
   expect(formatSeconds(75)).toBe("1m 15s");
   expect(formatUsd(0.5)).toBe("$0.500");
-  expect(stateStyle("RED").icon).toBe("✕");
-  expect(stateStyle("GREEN").label).toBe("GREEN");
+  expect(stateStyle("RED").icon).toBe("XOctagon");
+  expect(stateStyle("GREEN").label).toBe("Well supported");
 });
 
 test("safeHref allows only http(s)", async () => {
@@ -26,4 +26,10 @@ test("safeHref allows only http(s)", async () => {
   expect(safeHref("javascript:alert(1)")).toBeUndefined();
   expect(safeHref("data:text/html,x")).toBeUndefined();
   expect(safeHref("nonsense")).toBeUndefined();
+});
+
+test("formatRunCost never shows a misleading zero when cost is unknown", () => {
+  expect(formatRunCost({ cost_usd: 0, cost_known: false })).toBe("Cost unavailable");
+  expect(formatRunCost({})).toBe("Cost unavailable");
+  expect(formatRunCost({ cost_usd: 0.0431, cost_known: true })).toBe("≈$0.043");
 });

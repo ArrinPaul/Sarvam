@@ -1,7 +1,14 @@
+import { GLOSSARY } from "@contracts/glossary";
 import type { CoverageState } from "@contracts/types";
+import type { IconName } from "../components/ui/Icon";
 
 export function formatUsd(v: number): string {
   return `$${v.toFixed(v < 1 ? 3 : 2)}`;
+}
+
+/** Run cost for display: a figure only when one is known; otherwise say so, never a misleading $0.000. */
+export function formatRunCost(usage: { cost_usd?: number; cost_known?: boolean }): string {
+  return usage.cost_known ? `≈${formatUsd(usage.cost_usd ?? 0)}` : "Cost unavailable";
 }
 
 export function formatSeconds(s: number): string {
@@ -32,14 +39,14 @@ export function domainOf(url: string): string {
   }
 }
 
-export function stateStyle(state: CoverageState): { icon: string; label: string; colorVar: string } {
+export function stateStyle(state: CoverageState): { icon: IconName; label: string; colorVar: string } {
   switch (state) {
     case "RED":
-      return { icon: "✕", label: "RED", colorVar: "var(--bad)" };
+      return { icon: "XOctagon", label: GLOSSARY.coverage_state.RED.label, colorVar: "var(--color-bad-fg)" };
     case "AMBER":
-      return { icon: "▲", label: "AMBER", colorVar: "var(--warn)" };
+      return { icon: "AlertTriangle", label: GLOSSARY.coverage_state.AMBER.label, colorVar: "var(--color-warn-fg)" };
     case "GREEN":
-      return { icon: "✓", label: "GREEN", colorVar: "var(--ok)" };
+      return { icon: "CheckCircle", label: GLOSSARY.coverage_state.GREEN.label, colorVar: "var(--color-ok-fg)" };
   }
 }
 

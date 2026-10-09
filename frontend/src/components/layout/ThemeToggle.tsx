@@ -1,28 +1,32 @@
 import { useState } from "react";
-
-type Theme = "system" | "light" | "dark";
-const ORDER: Theme[] = ["system", "light", "dark"];
-
-function apply(theme: Theme) {
-  if (theme === "system") document.documentElement.removeAttribute("data-theme");
-  else document.documentElement.setAttribute("data-theme", theme);
-}
+import { THEMES, type Theme, getTheme, setTheme } from "../../lib/theme";
+import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("system");
+  const [themeState, setThemeState] = useState<Theme>(getTheme);
+
   const next = () => {
-    const n = ORDER[(ORDER.indexOf(theme) + 1) % ORDER.length] ?? "system";
-    apply(n);
+    const n = THEMES[(THEMES.indexOf(themeState) + 1) % THEMES.length] ?? "system";
     setTheme(n);
+    setThemeState(n);
   };
+
+  const getIcon = () => {
+    if (themeState === 'light') return 'Sun';
+    if (themeState === 'dark') return 'Moon';
+    return 'Monitor';
+  };
+
   return (
-    <button
-      type="button"
+    <Button
+      size="sm"
       onClick={next}
-      className="btn text-sm"
-      aria-label={`Theme: ${theme}. Activate to change.`}
+      aria-label={`Theme: ${themeState}. Activate to change.`}
+      title={`Theme: ${themeState}`}
+      icon={<Icon name={getIcon()} size={16} aria-hidden />}
     >
-      Theme: {theme}
-    </button>
+      <span className="label max-sm:sr-only">{themeState}</span>
+    </Button>
   );
 }

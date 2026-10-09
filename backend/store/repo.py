@@ -63,8 +63,10 @@ def now_iso() -> str:
 
 
 def row_to_run(row: sqlite3.Row) -> Run:
+    user_id = row["user_id"] if "user_id" in row.keys() else None
     return Run(
         id=row["id"],
+        user_id=user_id,
         question=row["question"],
         scope=Scope.model_validate_json(row["scope_json"]),
         mode=Mode(row["mode"]),
@@ -127,6 +129,8 @@ def build_usage(
     agg = conn.execute(
         "SELECT COALESCE(SUM(cost_usd), 0) AS cost,"
         " SUM(CASE WHEN tokens IS NOT NULL THEN 1 ELSE 0 END) AS llm,"
+        " COALESCE(SUM(tokens), 0) AS tokens,"
+        " SUM(CASE WHEN cost_usd IS NOT NULL THEN 1 ELSE 0 END) AS priced,"
         " MIN(ts) AS t0, MAX(ts) AS t1 FROM events WHERE run_id=?",
         (run_id,),
     ).fetchone()
@@ -142,6 +146,8 @@ def build_usage(
         llm_calls=agg["llm"] or 0,
         cost_usd=float(agg["cost"]),
         elapsed_seconds=elapsed,
+        tokens=int(agg["tokens"]),
+        cost_known=(agg["priced"] or 0) > 0,
     )
 
 
@@ -814,6 +820,47 @@ def _challenges(conn: sqlite3.Connection, run_id: str) -> list[Challenge]:
         )
         for r in conn.execute("SELECT * FROM challenges WHERE run_id=? ORDER BY rowid", (run_id,))
     ]
+
+
+def list_challenges(conn: sqlite3.Connection, run_id: str) -> list[Challenge]:
+    return _challenges(conn, run_id)
+
+
+def insert_challenge(
+    conn: sqlite3.Connection,
+    run_id: str,
+    *,
+    round: int,
+    attack: str,
+    target_slot: str | None,
+    target_claim: str | None,
+    required_evidence: str,
+    would_change_if: str,
+    followup_task_ids: list[str],
+) -> Challenge:
+    cid = next_id(conn, "H")
+    conn.execute(
+        "INSERT INTO challenges (id, run_id, round, attack, target_slot, target_claim,"
+        " required_evidence, would_change_if, followup_task_ids) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            cid,
+            run_id,
+            round,
+            attack,
+            target_slot,
+            target_claim,
+            required_evidence,
+            would_change_if,
+            json.dumps(followup_task_ids),
+        ),
+    )
+    conn.commit()
+    return next(c for c in _challenges(conn, run_id) if c.id == cid)
+
+
+def set_challenge_outcome(conn: sqlite3.Connection, challenge_id: str, outcome: str) -> None:
+    conn.execute("UPDATE challenges SET outcome=? WHERE id=?", (outcome, challenge_id))
+    conn.commit()
 
 
 def _stop(conn: sqlite3.Connection, run_id: str) -> StopDecision | None:

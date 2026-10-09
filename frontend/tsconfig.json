@@ -17,8 +17,9 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "types": ["vite/client", "bun"],
     "paths": {
-      "@contracts/*": ["../contracts/generated/*"]
+      "@contracts/*": ["../contracts/generated/*"],
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "vite.config.ts", "scripts", "../contracts/generated/types.ts"]
+  "include": ["src", "vite.config.ts", "scripts", "../contracts/generated/types.ts", "../contracts/generated/glossary.ts"]
 }

@@ -3,14 +3,18 @@
 # added by task T25 when the commands behind them exist.
 
 .PHONY: help dev backend frontend install lint typecheck test test-backend test-frontend \
-        build contracts contracts-check check graph fixtures gates
+        build contracts contracts-check check graph fixtures gates benchmark-llm
 
 help:
-	@echo "Targets: install dev backend frontend lint typecheck test build contracts contracts-check check graph fixtures gates"
+	@echo "Targets: install dev demo backend frontend lint typecheck test build contracts contracts-check check graph fixtures gates"
 
 install:
 	uv sync
 	bun install
+
+demo: install
+	@python -c "import os, shutil; shutil.copy('.env.example', '.env') if not os.path.exists('.env') else None"
+	$(MAKE) dev
 
 # Run backend and frontend together (two parallel jobs).
 dev:
@@ -41,9 +45,14 @@ test: test-backend test-frontend
 fixtures:
 	uv run pytest tests/fixtures
 
-# Offline gate suites (G0 needs provider keys for its live cases; G1/G2 are deterministic).
+# Offline gate suites (G0 needs provider keys for its live cases; G1-G3 are deterministic).
 gates:
-	uv run pytest tests/gates/g1/test_g1.py tests/gates/g2
+	uv run pytest tests/gates/g1/test_g1.py tests/gates/g2 tests/gates/g3 tests/gates/g4
+
+# Live LLM benchmark (needs provider keys): LABEL=baseline RUNS=3 make benchmark-llm. Env overrides
+# (SARVAM_LLM_MAX_TOKENS, SARVAM_VERIFIER_BATCH_SIZE, ...) select the configuration under test.
+benchmark-llm:
+	uv run python -m scripts.benchmark_llm --label $(or $(LABEL),baseline) --runs $(or $(RUNS),3)
 
 build:
 	bun run build
@@ -59,6 +68,10 @@ contracts-check:
 
 # Canonical local quality gate (SSOT 13.1: never merge red).
 check: lint contracts-check typecheck test build
+
+# Create or promote the preset admin account (prints a random password once).
+seed-admin:
+	uv run python -m backend.admin.seed
 
 # Refresh the Graphify code graph (AST only, no LLM). Output: graphify-out/ (git-ignored).
 graph:

@@ -11,28 +11,35 @@ import {
   slotsOf,
 } from "../../state/selectors";
 import { useSession } from "../../state/useRunSession";
-import { CoverageMatrix } from "../CoverageMatrix";
+import { CoverageMatrix, MatrixTable } from "../CoverageMatrix";
 import { OriginGroupView } from "../OriginGroupView";
 import { EmptyState } from "../ui/EmptyState";
 import { Skeleton } from "../ui/Skeleton";
 import { StateChip } from "../ui/StateChip";
 import { coverageChip } from "../ui/chips";
+import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+
+export function countChange(changes: Record<string, string>, kind: string): number {
+  return Object.values(changes).filter((c) => c === kind).length;
+}
 
 function MatrixSkeleton({ phase }: { phase: string }) {
   return (
     <div role="status" aria-live="polite" className="flex flex-col gap-3">
-      <p className="text-base" style={{ color: "var(--text-muted)" }}>
-        <span className="blink">{"●"}</span> {phase}
+      <p className="text-base text-text-muted flex items-center gap-2">
+        <Icon name="Activity" size={16} className="blink" aria-hidden /> {phase}
       </p>
-      <div className="card grid gap-3 p-3 sm:grid-cols-2 xl:grid-cols-3">
+      <Card pad="sm" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: 6 }, (_, i) => (
-          <div key={i} className="rounded-lg border p-3" style={{ borderColor: "var(--border)" }}>
+          <div key={i} className="rounded-lg border border-border-hairline p-3">
             <Skeleton className="mb-2 h-4 w-1/3" />
             <Skeleton className="mb-2 h-5 w-4/5" />
             <Skeleton className="h-3 w-3/5" />
           </div>
         ))}
-      </div>
+      </Card>
     </div>
   );
 }
@@ -52,6 +59,7 @@ export function MatrixPanel({
   const [picked, setPicked] = useState<number | null>(null);
   const [compare, setCompare] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [matrixView, setMatrixView] = useState<"grid" | "table">("grid");
   const round = picked !== null && rounds.includes(picked) ? picked : latest;
 
   const slots = useMemo(() => slotsOf(view), [view.plan, view.run?.id]);
@@ -73,7 +81,7 @@ export function MatrixPanel({
     return running ? (
       <div className="flex flex-col gap-3">
         <EmptyState
-          icon={"◴"}
+          icon="Clock"
           title="Coverage is computed after the first analysis pass"
           why={`Current phase: ${phaseText}`}
         />
@@ -97,89 +105,131 @@ export function MatrixPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div role="group" aria-label="Coverage round" className="inline-flex overflow-hidden rounded-md border" style={{ borderColor: "var(--border-strong)" }}>
-          {rounds.map((r) => (
-            <button
-              key={r}
-              type="button"
-              aria-pressed={round === r}
-              className="px-3 py-1 text-base"
-              style={{
-                background: round === r ? "var(--accent)" : "var(--surface)",
-                color: round === r ? "var(--bg)" : "var(--text)",
-                fontWeight: round === r ? 700 : 400,
-              }}
-              onClick={() => setPicked(r)}
-            >
-              Round {r}
-            </button>
-          ))}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-border-hairline/60">
+        <div className="flex flex-wrap items-center gap-3">
+          {rounds.length > 1 ? (
+            <label className="flex items-center gap-2">
+              <span className="font-semibold text-sm text-text-muted">Research round:</span>
+              <input
+                type="range"
+                min={0}
+                max={rounds.length - 1}
+                value={rounds.indexOf(round)}
+                onChange={(e) => setPicked(rounds[parseInt(e.target.value, 10)] ?? null)}
+                className="accent-brand cursor-pointer"
+                aria-label="Select research round"
+              />
+              <span className="mono text-sm font-semibold">{round}</span>
+            </label>
+          ) : (
+            <span className="font-semibold text-sm text-text-muted">Research round {round}</span>
+          )}
+
+          <div role="group" aria-label="Matrix view" className="inline-flex overflow-hidden rounded-md border border-border-hairline bg-surface p-0.5 shadow-sm">
+            {(["grid", "table"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={matrixView === v}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 text-sm rounded transition-all pointer-coarse:min-h-11 ${
+                  matrixView === v ? "bg-brand text-on-brand font-semibold shadow-sm" : "bg-transparent text-text-muted hover:text-text"
+                }`}
+                onClick={() => setMatrixView(v)}
+              >
+                <Icon name={v === "grid" ? "Grid" : "Table"} size={14} aria-hidden />
+                {v === "grid" ? "Grid" : "Table"}
+              </button>
+            ))}
+          </div>
+
+          {prevRound !== undefined ? (
+            <label className="text-sm text-text-muted flex items-center gap-2 cursor-pointer hover:text-text">
+              <input type="checkbox" checked={compare} onChange={(e) => setCompare(e.target.checked)} className="rounded" /> Compare with previous research round
+            </label>
+          ) : null}
         </div>
-        {prevRound !== undefined ? (
-          <label className="text-base">
-            <input type="checkbox" checked={compare} onChange={(e) => setCompare(e.target.checked)} /> Compare with previous
-            round
-          </label>
-        ) : null}
-        <div className="ml-auto flex flex-wrap items-center gap-2" aria-label="Legend and totals">
+
+        <div className="flex flex-wrap items-center gap-2" aria-label="Legend and totals">
           {(["GREEN", "AMBER", "RED"] as const).map((s) => (
-            <span key={s} className="inline-flex items-center gap-1">
+            <span key={s} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-sm bg-surface border border-border-hairline">
               <StateChip spec={coverageChip(s)} />
-              <span className="mono">{counts[s]}</span>
+              <span className="mono font-semibold">{counts[s]}</span>
             </span>
           ))}
         </div>
       </div>
 
-      <CoverageMatrix
-        dimensions={dims}
-        slots={slots}
-        cells={cells}
-        rollups={rollupsForRound(view, round)}
-        stats={stats}
-        {...(changes ? { changes } : {})}
-        selected={selected}
-        onSelect={setSelected}
-      />
+      {changes && prevRound !== undefined ? (
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-border-hairline bg-surface-2 px-3 py-2 text-base">
+          <span className="font-semibold">Research round {round} compared with round {prevRound}:</span>
+          <span className="inline-flex items-center gap-1 text-ok-fg">
+            <Icon name="TrendingUp" size={16} aria-hidden /> {countChange(changes, "improved")} improved
+          </span>
+          <span className="inline-flex items-center gap-1 text-bad-fg">
+            <Icon name="TrendingDown" size={16} aria-hidden /> {countChange(changes, "worse")} worse
+          </span>
+          <span className="inline-flex items-center gap-1 text-brand-secondary">
+            <Icon name="Plus" size={16} aria-hidden /> {countChange(changes, "new")} new
+          </span>
+          <span className="inline-flex items-center gap-1 text-text-muted">
+            <Icon name="Minus" size={16} aria-hidden /> {countChange(changes, "same")} unchanged
+          </span>
+        </p>
+      ) : null}
+
+      {(() => {
+        const props = {
+          dimensions: dims,
+          slots,
+          cells,
+          rollups: rollupsForRound(view, round),
+          stats,
+          ...(changes ? { changes } : {}),
+          selected,
+          onSelect: setSelected,
+        };
+        return matrixView === "grid" ? <CoverageMatrix {...props} /> : <MatrixTable {...props} />;
+      })()}
 
       {sel ? (
-        <section aria-label="Slot detail" className="card anim-in p-4">
+        <Card as="section" pad="md" aria-label="Key point detail">
           <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
             <div>
               <p className="label">
                 {selDim?.name ?? "Dimension"} / {sel.name}
               </p>
-              <p className="text-base" style={{ color: "var(--text-muted)" }}>
+              <p className="text-base text-text-muted">
                 {sel.description}
               </p>
             </div>
             {selCell ? <StateChip spec={coverageChip(selCell.state)} large /> : null}
           </div>
           {selCell ? (
-            <div className="mb-3 rounded-md p-3" style={{ background: "var(--surface-2)" }}>
+            <div className="mb-3 rounded-md p-3 bg-surface-2">
               <p className="label mb-1">Reason</p>
               <p>{selCell.reason}</p>
             </div>
           ) : null}
           <div className="mb-4 flex flex-wrap gap-2">
-            <button type="button" className="btn" onClick={() => onOpenClaims(sel.id)}>
-              View evidence ({selCell?.supporting_claims ?? 0} claims)
-            </button>
+            <Button onClick={() => onOpenClaims(sel.id)}>
+              View evidence ({selCell?.supporting_claims ?? 0} statements)
+            </Button>
             {(selCell?.open_conflicts ?? 0) > 0 ? (
-              <button type="button" className="btn" onClick={onOpenConflicts}>
-                {"⚡"} {selCell?.open_conflicts} open conflict{selCell?.open_conflicts === 1 ? "" : "s"}
-              </button>
+              <Button
+                className="text-warn-fg border-warn-border hover:bg-warn-bg"
+                icon={<Icon name="Zap" size={16} aria-hidden />}
+                onClick={onOpenConflicts}
+              >
+                {selCell?.open_conflicts} {selCell?.open_conflicts === 1 ? "disagreement" : "disagreements"} not yet explained
+              </Button>
             ) : null}
-            <button type="button" className="btn" onClick={() => setSelected(null)}>
-              Close
-            </button>
+            <Button onClick={() => setSelected(null)}>Close</Button>
           </div>
           <OriginGroupView slotName={sel.name} groups={originsForSlot(view, sel.id)} onOpenSource={onOpenSource} />
-        </section>
+        </Card>
       ) : (
-        <p className="text-base" style={{ color: "var(--text-muted)" }}>
-          Select a cell to see why it has that state, and how its sources collapse into independent origins.
+        <p className="text-base text-text-muted">
+          Select a cell to see why it has that status, and how its sources collapse into independent sources.
         </p>
       )}
     </div>

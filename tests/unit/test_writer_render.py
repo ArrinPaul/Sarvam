@@ -7,6 +7,7 @@ from backend.gateway.core import ToolGateway
 from backend.store import repo
 from backend.store.db import init_db
 from backend.synth.render import CitationError, render_markdown, verify_citations
+from backend.synth.report_verify import verify_report
 from backend.synth.writer import (
     NO_CLAIMS_SUMMARY,
     clean_draft,
@@ -16,7 +17,17 @@ from backend.synth.writer import (
 )
 from contracts.config import Settings
 from contracts.llm import ReportDraft, ReportFindingDraft, ReportSectionDraft
-from contracts.models import Budget, BudgetUsage, FailureType, Mode, Plan, Verdict
+from contracts.models import (
+    Budget,
+    BudgetUsage,
+    FailureType,
+    FinalState,
+    Mode,
+    Plan,
+    StopDecision,
+    TerminationReason,
+    Verdict,
+)
 from tests.support.data import plan_dict
 from tests.support.fakes import FakeLLM
 
@@ -80,8 +91,20 @@ class Env:
 
     def render(self, draft, claims=None, **kw):
         claims = eligible_claims(self.conn, "R1") if claims is None else claims
+        decision = kw.pop("decision", None) or StopDecision(
+            state=FinalState.SUFFICIENT_WITH_CAVEATS,
+            termination_reason=TerminationReason.MAX_ROUNDS,
+        )
+        verified = verify_report(draft, claims, repo.list_dimensions(self.conn, "R1"), {}, set())
         return render_markdown(
-            self.conn, self.run, draft, kw.pop("usage", BudgetUsage()), self.settings, claims, **kw
+            self.conn,
+            self.run,
+            verified,
+            kw.pop("usage", BudgetUsage()),
+            self.settings,
+            claims,
+            decision=decision,
+            **kw,
         )
 
 
@@ -181,14 +204,14 @@ def test_render_strips_typed_markers_escapes_tables_and_reports_unreported_cost(
     assert "- Plans cost Rs. 1,299 per month . [C1]" in md or "Plans cost Rs. 1,299" in md
     assert "https://a.example/x\\|y" in md  # pipe escaped inside the sources table
     assert "| S1 | a.example | news | 2 | 2026-02-03 |" in md
-    assert "Cost: not reported by provider" in md
-    assert "- Geography: Bengaluru" in md and "Assurance state: not yet computed (M0)" in md
-    assert "Searches: 3/24" in md and "Mode: LIVE" in md
+    assert "- Geography: Bengaluru" in md
+    assert "Assurance state" not in md and "SUFFICIENT_WITH_CAVEATS" not in md
+    assert "Method and run metadata" not in md and "Searches: 3/24" not in md
+    # Plain-language layer (B-38): headline, stop reason and reading guide, before the jargon line.
+    assert "**Answer is solid, with caveats.**" in md
+    assert "Why the research stopped: Follow-up limit reached." in md
+    assert "## How to read this report" in md
     assert "### Demand" in md and "No verified claims were found for this dimension." in md
-    costed = env.render(draft, usage=BudgetUsage(cost_usd=0.1234))
-    assert "Cost: $0.1234" in costed
-    early = env.render(draft, termination_reason="budget")
-    assert "Run ended early: budget" in early
 
 
 def test_verify_citations_rejects_every_unresolvable_citation(tmp_path):
@@ -206,3 +229,30 @@ def test_verify_citations_rejects_every_unresolvable_citation(tmp_path):
     env.conn.commit()
     with pytest.raises(CitationError, match="C500: quote is not in passage"):
         verify_citations(env.conn, "R1", "text [C500]")
+
+
+def test_every_non_green_critical_gap_has_a_plain_reason_and_a_next_step(tmp_path):
+    """Card A: the report says what is missing in a full sentence and what to do about it."""
+    env = Env(tmp_path)
+    crit = [s for s in repo.list_slots(env.conn, "R1") if s.critical]
+    states = [("AMBER", 1, 0), ("AMBER", 2, 1), ("RED", 0, 0)]
+    cells = [
+        {
+            "slot_id": slot.id,
+            "state": state,
+            "independent_origins": origins,
+            "supporting_claims": origins,
+            "open_conflicts": conflicts,
+            "reason": "RAW 1 source, 1 origin: 1 of the 2 independent origins required.",
+        }
+        for slot, (state, origins, conflicts) in zip(crit, states, strict=False)
+    ]
+    repo.replace_coverage_round(env.conn, "R1", 1, cells)
+    md = env.render(draft_with(ReportFindingDraft(text="A fact.", claim_ids=[env.claim.id])))
+    section = md.split("## Conflicts and unresolved items")[1].split("\n## ")[0]
+    lines = [ln for ln in section.splitlines() if ln.startswith("- ")]
+    assert len(lines) == len(cells) >= 2
+    for ln in lines:
+        assert "Next step:" in ln, ln
+        assert ", so " in ln, ln  # a full sentence, not the raw reason
+    assert "RAW" not in section and "origin" not in section.lower().replace("independent", "")

@@ -6,7 +6,7 @@
 
 *Research that knows when it isn't done.*
 
-![Status](https://img.shields.io/badge/status-foundation-orange)
+![Status](https://img.shields.io/badge/status-G4%20replay-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
@@ -41,6 +41,20 @@ Most AI research tools optimize for finding information and writing a fluent ans
 > Research that knows when it isn't done.
 
 The agent stops when a rule-based sufficiency policy is satisfied or a hard limit is hit, and it shows the reason. Four moments are always visible: the coverage matrix, independence collapse ("9 sources, 3 independent origins"), claim-to-passage drill-down, and the stop card. Sarvam is an evidence-assurance layer over a research pipeline; it does not claim to detect truth.
+
+## Quickstart
+
+Requires Python 3.11+, [uv](https://docs.astral.sh/uv/) and [Bun](https://bun.sh). To run the agent locally on the recorded canonical run (offline, no API keys, no cost):
+
+```bash
+git clone https://github.com/AdharshJolly/Sarvam.git
+cd Sarvam
+make demo
+```
+
+Open http://localhost:5173, choose **REPLAY** in the run form and start the pre-filled canonical question. REPLAY only knows the one recorded question; for any other question, put your own search and model keys in `.env` (see `.env.example`) and choose **LIVE**. A live run uses credits and takes a few minutes.
+
+`make gates` runs the offline gate suites (G1 to G4); `make check` is the full quality gate. Do not run `make check` with live keys in `.env`: it also runs the live G0 and G1 tests.
 
 ## How it works
 
@@ -162,13 +176,14 @@ Contracts first. Walking skeleton before intelligence. Fixtures before prompts. 
 
 ## Project status
 
-**Foundation.** The monorepo, canonical contracts, SQLite schema and event writer, health endpoint, ToolGateway interfaces and the frontend shell are in place. The research controller, pipeline, evidence intelligence and report generation are not implemented yet.
+**Gates G0-G3 pass offline; the hardening phase is next.** Done: contracts, SQLite store, ToolGateway (budgets, SSRF guard, record/replay), planner, discover, acquire, extract, claims with the quote guard, independent verifier, origin clustering, numeric conflicts, coverage and gap tasks, the challenge loop, the round-based controller with the deterministic stop policy, the report verifier with certainty labels, the fixture corpus and the live frontend. Not yet done: a measured live run, failure states end to end, recorded canonical runs with offline replay, the audit sheet and the one-command run. Task-by-task status and the plan are in [docs/STATUS.md](docs/STATUS.md).
 
 ## Documentation map
 
 | Document | Purpose |
 | --- | --- |
 | [docs/ssot/SSOT_v2.docx](docs/ssot/SSOT_v2.docx) | Single Source of Truth (canonical) |
+| [docs/STATUS.md](docs/STATUS.md) | Build status by task and gate, next plan |
 | [docs/architecture](docs/architecture/README.md) | Architecture as built |
 | [docs/architecture/security.md](docs/architecture/security.md) | Security boundaries |
 | [docs/decisions](docs/decisions/README.md) | ADRs and change log |
