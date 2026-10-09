@@ -1,5 +1,6 @@
 import type { AdminUserRow, EventType } from "@contracts/types";
 import { useEffect, useState, type ReactNode } from "react";
+import { runApi } from "../../api";
 import { ApiError, adminApi, adminDownloads } from "../../api/client";
 import {
   type AdminSection,
@@ -17,6 +18,13 @@ import { Avatar } from "./parts";
 import { SkeletonLines } from "../ui/Skeleton";
 import { type BudgetKey, type BudgetText, budgetToText, parseBudgetForm } from "./budgetForm";
 import { ConfirmDialog, QuotaDialog } from "./dialogs";
+import { runsPerDay } from "./filter";
+import {
+  type RunFilter,
+  addFilter,
+  loadFilters,
+  removeFilter,
+} from "./savedFilters";
 import { useAdminResource } from "./useAdminResource";
 import {
   ActivityView,
@@ -260,11 +268,17 @@ export function AdminLayout({
 function OverviewPage({ tick }: { tick: number }) {
   const overview = useAdminResource(() => adminApi.overview(), [tick], POLL_MS);
   const health = useAdminResource(() => adminApi.health(), [tick], POLL_MS);
+  const recent = useAdminResource(
+    () => adminApi.runs({ limit: 100, include_hidden: true }),
+    [tick],
+    POLL_MS,
+  );
+  const runsByDay = recent.data ? runsPerDay(recent.data.items, 14) : undefined;
   return (
     <>
       <PageTitle title="Overview" description={SECTION_BLURB.overview} />
       <ResourceView {...overview} label="the overview">
-        {(o) => <OverviewView overview={o} health={health.data} />}
+        {(o) => <OverviewView overview={o} health={health.data} runsByDay={runsByDay} />}
       </ResourceView>
     </>
   );
@@ -301,6 +315,8 @@ function RunsPage({ tick, runId, bump }: { tick: number; runId: string | null; b
   const [offset, setOffset] = useState(0);
   const [includeHidden, setIncludeHidden] = useState(false);
   const [confirmStop, setConfirmStop] = useState(false);
+  const [confirmRetry, setConfirmRetry] = useState(false);
+  const [saved, setSaved] = useState<RunFilter[]>(() => loadFilters(window.localStorage));
   const mut = useMutation();
   const list = useAdminResource(
     () =>
@@ -333,6 +349,37 @@ function RunsPage({ tick, runId, bump }: { tick: number; runId: string | null; b
                 }}
                 onToggleHidden={async () => {
                   if (await mut.run(() => adminApi.setRunHidden(d.run.id, !d.run.hidden))) bump();
+                }}
+                onRetry={() => {
+                  mut.clear();
+                  setConfirmRetry(true);
+                }}
+              />
+              <ConfirmDialog
+                isOpen={confirmRetry}
+                title="Retry this run?"
+                body={
+                  d.run.mode === "LIVE"
+                    ? "This starts a new LIVE run with the same question under your account. It uses search and model credits."
+                    : "This starts a new REPLAY run with the same question under your account. It is recorded, offline and free."
+                }
+                confirmLabel="Start new run"
+                busy={mut.busy}
+                error={mut.error}
+                onClose={() => setConfirmRetry(false)}
+                onConfirm={async () => {
+                  let newId: string | null = null;
+                  const ok = await mut.run(async () => {
+                    const created = await runApi.createRun({
+                      question: d.run.question,
+                      mode: d.run.mode,
+                    });
+                    newId = created.id;
+                  });
+                  if (ok && newId) {
+                    setConfirmRetry(false);
+                    window.location.hash = `#/run/${encodeURIComponent(newId)}`;
+                  }
                 }}
               />
               <ConfirmDialog
@@ -387,6 +434,22 @@ function RunsPage({ tick, runId, bump }: { tick: number; runId: string | null; b
               window.location.hash = buildAdminHash("runs", r.id);
             }}
             onPage={setOffset}
+            saved={saved}
+            onSaveFilter={(name) =>
+              setSaved((cur) =>
+                addFilter(window.localStorage, cur, { name, status, mode, search, includeHidden }),
+              )
+            }
+            onApplyFilter={(f) => {
+              setStatus(f.status);
+              setMode(f.mode);
+              setSearch(f.search);
+              setIncludeHidden(f.includeHidden);
+              setOffset(0);
+            }}
+            onRemoveFilter={(name) =>
+              setSaved((cur) => removeFilter(window.localStorage, cur, name))
+            }
           />
         )}
       </ResourceView>

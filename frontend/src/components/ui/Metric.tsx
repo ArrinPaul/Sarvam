@@ -19,7 +19,7 @@ export function Metric({ label, value, icon, onClick, title, trend }: MetricProp
         <span className="label">{label}</span>
       </div>
       <div className="flex items-baseline gap-1.5">
-        <span className="mono text-base font-semibold">{value}</span>
+        <span className="mono whitespace-nowrap text-base font-semibold">{value}</span>
         {trend === "up" && <Icon name="TrendingUp" size={12} className="text-bad-fg" aria-hidden />}
         {trend === "down" && <Icon name="TrendingDown" size={12} className="text-ok-fg" aria-hidden />}
       </div>

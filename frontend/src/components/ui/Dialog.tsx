@@ -7,8 +7,8 @@ export type DialogPlacement = "center" | "right" | "left" | "bottom";
 const PLACEMENT: Record<DialogPlacement, string> = {
   center: "anim-in m-auto rounded-xl border border-border-hairline shadow-elevation bg-surface p-0",
   right:
-    "anim-drawer fixed inset-y-0 right-0 z-30 m-0 h-full max-h-dvh w-full max-w-[32rem] border-l border-border-hairline bg-surface/95 backdrop-blur-md shadow-elevation",
-  left: "anim-in fixed inset-y-0 left-0 z-30 m-0 h-full max-h-dvh w-full max-w-[22rem] border-r border-border-hairline bg-surface",
+    "anim-drawer fixed inset-y-0 left-auto right-0 z-30 m-0 h-full max-h-dvh w-full max-w-[32rem] border-l border-border-hairline bg-surface/95 backdrop-blur-md shadow-elevation",
+  left: "anim-in fixed inset-y-0 left-0 right-auto z-30 m-0 h-full max-h-dvh w-full max-w-[22rem] border-r border-border-hairline bg-surface",
   bottom:
     "anim-in fixed inset-x-0 bottom-0 z-30 m-0 max-h-[85dvh] w-full max-w-none rounded-t-[1.3rem] border-t border-border-hairline bg-surface",
 };

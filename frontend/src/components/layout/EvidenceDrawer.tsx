@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ageBucket, safeHref } from "../../lib/format";
+import { isTypingTarget, neighbourClaim, orderedClaimIds } from "../../lib/claimNav";
 import { highlightRanges } from "../../lib/quote";
 import { useEvidence } from "../../state/EvidenceContext";
 import { useClaimEvidence } from "../../state/useClaimEvidence";
@@ -12,8 +13,33 @@ import { StateChip } from "../ui/StateChip";
 import { sourceStatusChip, verdictChip } from "../ui/chips";
 import { Dialog } from "../ui/Dialog";
 import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { termTitle } from "../../lib/terms";
+
+function CopyQuote({ quote, url }: { quote?: string | null; url?: string | null }) {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  if (!quote) return null;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url ? `"${quote}" (${url})` : `"${quote}"`);
+      setState("copied");
+    } catch {
+      setState("failed");
+    }
+    window.setTimeout(() => setState("idle"), 2000);
+  };
+  return (
+    <div className="mt-2 flex items-center gap-2">
+      <Button size="sm" onClick={() => void copy()} icon={<Icon name="Quote" size={14} aria-hidden />}>
+        Copy quote with link
+      </Button>
+      <span role="status" className="text-sm text-text-muted">
+        {state === "copied" ? "Copied" : state === "failed" ? "Copy is blocked in this browser" : ""}
+      </span>
+    </div>
+  );
+}
 
 function ClaimEvidenceView({ runId, claimId }: { runId: string; claimId: string }) {
   const { load, retry } = useClaimEvidence(runId, claimId);
@@ -50,6 +76,7 @@ function ClaimEvidenceView({ runId, claimId }: { runId: string; claimId: string 
       <header>
         <p className="label mb-1">{termTitle("claim")} {claim?.id}</p>
         <h3 className="font-display text-xl font-semibold leading-snug">{claim?.text}</h3>
+        <CopyQuote quote={claim?.quote} url={source?.url} />
         {claim?.value_num != null ? (
           <p className="text-base text-text-muted">
             {claim.entity ?? "?"} / {claim.attribute ?? "?"} = {claim.value_num} {claim.unit ?? ""}
@@ -142,6 +169,30 @@ export function EvidenceDrawer() {
   const { runId } = useSession();
   const { close } = ev;
   const docked = useMediaQuery("(min-width: 1280px)");
+  const { view } = useSession();
+  const ids = useMemo(() => orderedClaimIds(Object.keys(view.claims)), [view.claims]);
+  const current = ev.openIds.length === 1 ? ev.openIds[0] : undefined;
+  const position = current ? ids.indexOf(current) : -1;
+  const step = (dir: 1 | -1) => {
+    const next = neighbourClaim(ids, current, dir);
+    if (next) ev.open([next]);
+  };
+
+  useEffect(() => {
+    if (!ev.isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || isTypingTarget(e.target)) return;
+      const k = e.key.toLowerCase();
+      if (k === "j" || k === "k") {
+        e.preventDefault();
+        const next = neighbourClaim(ids, current, k === "j" ? 1 : -1);
+        if (next) ev.open([next]);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ev.isOpen, ids, current]);
 
   return (
     <Dialog
@@ -153,6 +204,35 @@ export function EvidenceDrawer() {
     >
       {ev.isOpen && runId ? (
         <div className="flex flex-col gap-4 pb-8">
+          {current && position >= 0 ? (
+            <div className="flex items-center justify-between gap-2 text-sm text-text-muted">
+              <span>
+                Statement {position + 1} of {ids.length}
+              </span>
+              <span className="flex items-center gap-1">
+                <Button
+                  size="sm"
+                  aria-label="Previous statement (K)"
+                  title="Previous (K)"
+                  disabled={position === 0}
+                  onClick={() => step(-1)}
+                  icon={<Icon name="ChevronUp" size={14} aria-hidden />}
+                >
+                  Prev
+                </Button>
+                <Button
+                  size="sm"
+                  aria-label="Next statement (J)"
+                  title="Next (J)"
+                  disabled={position === ids.length - 1}
+                  onClick={() => step(1)}
+                  icon={<Icon name="ChevronDown" size={14} aria-hidden />}
+                >
+                  Next
+                </Button>
+              </span>
+            </div>
+          ) : null}
           {ev.openIds.map((id) => (
             <ClaimEvidenceView key={`${runId}:${id}`} runId={runId} claimId={id} />
           ))}

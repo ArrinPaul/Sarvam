@@ -11,7 +11,7 @@ import type {
   AdminUserRow,
   FinalState,
 } from "@contracts/types";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { ApiError } from "../../api/client";
 import { formatUsd } from "../../lib/format";
 import { ModeBadge } from "../ModeBadge";
@@ -33,6 +33,7 @@ import {
   parseBudgetForm,
 } from "./budgetForm";
 import { filterRuns, filterUsers } from "./filter";
+import type { RunFilter } from "./savedFilters";
 import {
   Avatar,
   DefRow,
@@ -135,9 +136,12 @@ const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? o
 export function OverviewView({
   overview,
   health,
+  runsByDay,
 }: {
   overview: AdminOverview;
   health: AdminHealth | null;
+  /** Runs started per UTC day, oldest first. Omitted while it loads. */
+  runsByDay?: { date: string; count: number }[];
 }) {
   const replay = overview.runs_by_mode.REPLAY ?? 0;
   const failed = overview.runs_by_status.failed ?? 0;
@@ -192,6 +196,23 @@ export function OverviewView({
         />
         <StatTile icon="Activity" label="Tokens" value={fmtTokens(overview.total_tokens)} sub="all runs" />
       </div>
+      {runsByDay ? (
+        <Panel title={`Runs per day (last ${runsByDay.length} days, UTC)`}>
+          <BarSeries
+            label={`Runs started per day over the last ${runsByDay.length} days`}
+            data={runsByDay.map((d) => ({ label: d.date, value: d.count }))}
+            format={(n) => `${n} run${n === 1 ? "" : "s"}`}
+            height={110}
+          />
+          <div className="mono mt-1 flex justify-between text-sm text-text-muted">
+            <span>{runsByDay[0]?.date}</span>
+            <span>
+              {runsByDay.reduce((s, d) => s + d.count, 0)} in this window ·{" "}
+              {runsByDay[runsByDay.length - 1]?.date}
+            </span>
+          </div>
+        </Panel>
+      ) : null}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Panel title="Runs by status">
@@ -405,7 +426,15 @@ export function RunsView({
   includeHidden,
   onIncludeHidden,
   onExport,
+  saved = [],
+  onSaveFilter,
+  onApplyFilter,
+  onRemoveFilter,
 }: {
+  saved?: RunFilter[];
+  onSaveFilter?: (name: string) => void;
+  onApplyFilter?: (f: RunFilter) => void;
+  onRemoveFilter?: (name: string) => void;
   includeHidden: boolean;
   onIncludeHidden: (v: boolean) => void;
   onExport: () => void;
@@ -419,6 +448,8 @@ export function RunsView({
   onOpen: (r: AdminRunRow) => void;
   onPage: (offset: number) => void;
 }) {
+  const [naming, setNaming] = useState(false);
+  const [filterName, setFilterName] = useState("");
   const rows = filterRuns(page.items, search);
   const from = page.total === 0 ? 0 : page.offset + 1;
   const to = page.offset + page.items.length;
@@ -449,7 +480,68 @@ export function RunsView({
             />
             <span>Show hidden</span>
           </label>
+          {onSaveFilter ? (
+            naming ? (
+              <form
+                className="flex items-center gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (filterName.trim()) {
+                    onSaveFilter(filterName.trim());
+                    setFilterName("");
+                    setNaming(false);
+                  }
+                }}
+              >
+                <input
+                  autoFocus
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                  placeholder="Name this filter"
+                  aria-label="Filter name"
+                  className="h-8 w-44 rounded-md border border-border-strong bg-surface px-2 text-sm"
+                />
+                <Button size="sm" type="submit" variant="primary" disabled={!filterName.trim()}>
+                  Save
+                </Button>
+                <Button size="sm" type="button" variant="ghost" onClick={() => setNaming(false)}>
+                  Cancel
+                </Button>
+              </form>
+            ) : (
+              <Button size="sm" variant="ghost" onClick={() => setNaming(true)}>
+                Save this filter
+              </Button>
+            )
+          ) : null}
         </div>
+        {saved.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2 border-t border-border-hairline pt-3">
+            <span className="label">Saved</span>
+            {saved.map((f) => (
+              <span
+                key={f.name}
+                className="inline-flex items-center rounded-md border border-border-strong bg-surface"
+              >
+                <button
+                  type="button"
+                  onClick={() => onApplyFilter?.(f)}
+                  className="h-8 rounded-l-md px-3 text-sm font-medium hover:bg-surface-2"
+                >
+                  {f.name}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Remove saved filter ${f.name}`}
+                  onClick={() => onRemoveFilter?.(f.name)}
+                  className="flex h-8 w-8 items-center justify-center rounded-r-md border-l border-border-hairline text-text-muted hover:bg-surface-2 hover:text-text"
+                >
+                  <Icon name="X" size={12} aria-hidden />
+                </button>
+              </span>
+            ))}
+          </div>
+        ) : null}
       </Card>
       <DataTable
         caption="All runs"
@@ -493,6 +585,7 @@ export function RunDetailView({
   onBack,
   onStop,
   onToggleHidden,
+  onRetry,
   busy = false,
   error = null,
 }: {
@@ -500,6 +593,8 @@ export function RunDetailView({
   onBack: () => void;
   onStop: () => void;
   onToggleHidden: () => void;
+  /** Offered for failed runs: starts a new run with the same question and mode. */
+  onRetry?: () => void;
   busy?: boolean;
   error?: string | null;
 }) {
@@ -543,6 +638,17 @@ export function RunDetailView({
           {active ? (
             <Button size="sm" variant="danger" disabled={busy} onClick={onStop} icon={<Icon name="Square" size={14} aria-hidden />}>
               Stop run
+            </Button>
+          ) : null}
+          {r.status === "failed" && onRetry ? (
+            <Button
+              size="sm"
+              variant="primary"
+              disabled={busy}
+              onClick={onRetry}
+              icon={<Icon name="RotateCcw" size={14} aria-hidden />}
+            >
+              Retry as a new run
             </Button>
           ) : null}
           <Button size="sm" disabled={busy} onClick={onToggleHidden}>

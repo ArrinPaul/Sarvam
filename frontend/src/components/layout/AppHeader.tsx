@@ -4,6 +4,7 @@ import { ModeBadge } from "../ModeBadge";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
 import { Metric } from "../ui/Metric";
+import { AccountMenu } from "./AccountMenu";
 import { Tooltip } from "../ui/Tooltip";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -43,9 +44,9 @@ export function AppHeader({
   const { user, logout } = useAuth();
 
   return (
-    <header className="app-header sticky top-0 z-30 flex min-h-16 w-full items-center justify-between xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] border-b border-border-hairline bg-surface/85 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-2.5">
+    <header className="app-header sticky top-0 z-30 flex min-h-16 w-full items-center justify-between lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] border-b border-border-hairline bg-surface/85 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-2.5">
       {/* Left: Brand */}
-      <div className="flex items-center gap-3 shrink-0 xl:justify-self-start">
+      <div className="flex items-center gap-3 shrink-0 lg:justify-self-start">
         {runId ? (
           <Button
             size="icon"
@@ -68,7 +69,7 @@ export function AppHeader({
           <h1 className="min-w-0 truncate text-sm font-medium text-text text-center">{question}</h1>
         </Tooltip>
       ) : (
-        <div className="hidden xl:flex items-center justify-center px-4 xl:justify-self-center">
+        <div className="hidden lg:flex items-center justify-center px-4 lg:justify-self-center">
           <nav
             aria-label="Section Navigation"
             className="flex items-center gap-1.5 text-sm font-medium text-text-muted bg-surface-2/90 border border-border-hairline px-2 py-1 rounded-full shadow-xs"
@@ -90,35 +91,10 @@ export function AppHeader({
       )}
 
       {/* Right: User Auth & Workspace controls */}
-      <div className="flex shrink-0 items-center gap-2 sm:gap-3 xl:justify-self-end">
-        {user ? (
-          <div className="flex items-center gap-1 sm:gap-2">
-            <a
-              href="#/workspace"
-              className="text-sm font-medium text-text-muted hover:text-text transition-colors px-2 py-1 rounded"
-            >
-              Workspace
-            </a>
-            <a
-              href="#/history"
-              className="text-sm font-medium text-text-muted hover:text-text transition-colors px-2 py-1 rounded"
-            >
-              History
-            </a>
-            {user.role === "admin" ? (
-              <a
-                href="#/admin"
-                className="text-sm font-medium text-text-muted hover:text-text transition-colors px-2 py-1 rounded"
-              >
-                Admin
-              </a>
-            ) : null}
-          </div>
-        ) : null}
-
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:justify-self-end">
         {runId && showMode ? <ModeBadge mode={mode} pulsing={running} /> : null}
         {runId ? (
-          <div className="hidden items-center gap-5 md:flex" role="group" aria-label="Run totals">
+          <div className="hidden items-center gap-5 whitespace-nowrap 2xl:flex" role="group" aria-label="Run totals">
             {metrics.map((m) => (
               <Metric key={m.label} label={m.label} value={m.value} onClick={m.onClick} />
             ))}
@@ -142,38 +118,7 @@ export function AppHeader({
 
         {/* User Auth Info */}
         {user ? (
-          <div className="flex items-center gap-2 border-l border-border-hairline pl-3">
-            <a
-              href="#/account"
-              className="flex items-center gap-2 group hover:opacity-85 transition-opacity"
-              title={`Account: ${user.email}`}
-            >
-              <div
-                className="w-7 h-7 rounded-full bg-accent text-brand font-bold text-sm flex items-center justify-center cursor-pointer group-hover:ring-2 group-hover:ring-brand"
-              >
-                {user.display_name.charAt(0).toUpperCase()}
-              </div>
-              <span className="hidden 2xl:inline text-sm font-medium text-text truncate max-w-[120px]">
-                {user.display_name}
-              </span>
-            </a>
-            <a
-              href="#/account"
-              className="hidden 2xl:inline-flex text-sm text-text-muted hover:text-text px-2 py-0.5 rounded border border-border-hairline hover:bg-surface transition-colors"
-            >
-              Account
-            </a>
-
-            <button
-              type="button"
-              onClick={() => logout()}
-              className="text-sm text-text-muted hover:text-bad-fg transition-colors p-1"
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <Icon name="LogOut" size={14} />
-            </button>
-          </div>
+          <AccountMenu user={user} onSignOut={() => void logout()} />
         ) : (
           <div className="flex items-center gap-2 border-l border-border-hairline pl-3">
             <a

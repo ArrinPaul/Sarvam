@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { runApi } from "../../api";
 import { ApiError } from "../../api/client";
 import { formatRunCost } from "../../lib/format";
+import { buildExportMarkdown } from "../../lib/reportExport";
 import { buildHash } from "../../lib/route";
 import { collectCitationIds, parseReport, unresolvedCitations } from "../../lib/reportMarkdown";
 import type { ReportNode } from "../../lib/reportMarkdown";
@@ -75,7 +76,7 @@ export function ReportPanel() {
 
   const download = () => {
     if (!report) return;
-    const url = URL.createObjectURL(new Blob([report.markdown], { type: "text/markdown" }));
+    const url = URL.createObjectURL(new Blob([buildExportMarkdown(report, view.claims)], { type: "text/markdown" }));
     const a = document.createElement("a");
     a.href = url;
     a.download = `sarvam-report-${report.run_id}-v${report.version}.md`;

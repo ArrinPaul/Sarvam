@@ -69,7 +69,7 @@ export function HBarList({
   return (
     <ul className="flex flex-col gap-2">
       {data.map((d, i) => (
-        <li key={d.label} className="grid grid-cols-[minmax(0,9rem)_1fr_auto] items-center gap-3 text-sm">
+        <li key={d.label} className="grid grid-cols-[minmax(0,12rem)_1fr_auto] items-center gap-3 text-sm">
           <span className="truncate" title={d.label}>
             {d.label}
           </span>
