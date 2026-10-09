@@ -27,7 +27,7 @@ from backend.admin.router import build_admin_router
 from backend.controller import RunHandle, run_research
 from backend.pipeline.claims import locate_quote
 from backend.store import repo
-from backend.store.db import connect, init_db
+from backend.store.db import ThreadLocalConnection, connect, init_db
 from backend.store.emit import Emitter
 from backend.store.events import append_event, read_events
 from contracts.config import Settings
@@ -80,7 +80,11 @@ def create_app(settings: Settings | None = None, *, runner: Runner | None = None
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         conn = init_db(settings.db_path)
         _fail_stale_runs(conn)
-        app.state.db = conn
+        # Handlers run in a thread pool: give each thread its own connection (file databases only).
+        shared = (
+            conn if str(settings.db_path) == ":memory:" else ThreadLocalConnection(settings.db_path)
+        )
+        app.state.db = shared
         try:
             yield
         finally:
@@ -88,6 +92,7 @@ def create_app(settings: Settings | None = None, *, runner: Runner | None = None
             for task in tasks:
                 task.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
+            shared.close()
             conn.close()
 
     app = FastAPI(

@@ -8,6 +8,7 @@ change-log row (SSOT section 21); an unknown version fails loudly instead of gue
 from __future__ import annotations
 
 import sqlite3
+import threading
 from pathlib import Path
 
 SCHEMA_VERSION = 4
@@ -29,6 +30,47 @@ def connect(db_path: str | Path) -> sqlite3.Connection:
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.execute("PRAGMA busy_timeout=5000")
     return conn
+
+
+class ThreadLocalConnection:
+    """One sqlite3 connection per thread, behind the `sqlite3.Connection` calls the code uses.
+
+    FastAPI runs synchronous handlers in a thread pool. Sharing a single connection between those
+    threads interleaves statements and cursors, which showed up as spurious 404s and 500s under
+    concurrent requests. SQLite in WAL mode handles several connections (one writer, many readers),
+    so each thread gets its own. `:memory:` databases cannot be shared this way; use `connect`.
+    """
+
+    def __init__(self, db_path: str | Path) -> None:
+        self._path = Path(db_path)
+        self._local = threading.local()
+        self._guard = threading.Lock()
+        self._opened: list[sqlite3.Connection] = []
+
+    def _conn(self) -> sqlite3.Connection:
+        conn = getattr(self._local, "conn", None)
+        if conn is None:
+            conn = connect(self._path)
+            with self._guard:
+                self._opened.append(conn)
+            self._local.conn = conn
+        return conn
+
+    def __getattr__(self, name: str):
+        return getattr(self._conn(), name)
+
+    def __enter__(self) -> sqlite3.Connection:
+        return self._conn().__enter__()
+
+    def __exit__(self, *exc: object) -> bool | None:
+        return self._conn().__exit__(*exc)
+
+    def close(self) -> None:
+        with self._guard:
+            opened, self._opened = self._opened, []
+        for conn in opened:
+            conn.close()
+        self._local = threading.local()
 
 
 # (table, column, DDL) for columns added after schema v1; applied to older databases (B-36, B-37).
