@@ -2,7 +2,6 @@ import type { AdminUserRow, EventType } from "@contracts/types";
 import { useEffect, useState, type ReactNode } from "react";
 import { ApiError, adminApi, adminDownloads } from "../../api/client";
 import {
-  ADMIN_SECTIONS,
   type AdminSection,
   buildAdminHash,
   parseAdminRoute,
@@ -14,6 +13,7 @@ import { ThemeToggle } from "../layout/ThemeToggle";
 import { Banner } from "../ui/Banner";
 import { Button } from "../ui/Button";
 import { Icon, type IconName } from "../ui/Icon";
+import { Avatar } from "./parts";
 import { SkeletonLines } from "../ui/Skeleton";
 import { type BudgetKey, type BudgetText, budgetToText, parseBudgetForm } from "./budgetForm";
 import { ConfirmDialog, QuotaDialog } from "./dialogs";
@@ -42,6 +42,23 @@ const NAV: Record<AdminSection, { label: string; icon: IconName }> = {
   audit: { label: "Audit log", icon: "ShieldCheck" },
   health: { label: "Health", icon: "HeartPulse" },
   settings: { label: "Settings", icon: "SlidersHorizontal" },
+};
+
+/** Navigation groups: what you watch, then what you change. */
+const NAV_GROUPS: { label: string; sections: AdminSection[] }[] = [
+  { label: "Monitor", sections: ["overview", "runs", "activity", "health"] },
+  { label: "Manage", sections: ["users", "costs", "audit", "settings"] },
+];
+
+const SECTION_BLURB: Record<AdminSection, string> = {
+  overview: "How the system is doing right now: runs, spend, and anything that needs a look.",
+  runs: "Every research run across all accounts. Open one to stop it, hide it, or see its outcome.",
+  users: "Accounts, roles and spending limits. Changes are recorded in the audit log.",
+  costs: "What the runs have cost, by day and by kind of work.",
+  activity: "The raw event stream behind every run, newest first.",
+  audit: "Every change made in this console: who did what, and when.",
+  health: "Database, gateway mode and typed failures.",
+  settings: "The default budget that new runs start from.",
 };
 
 const EVENT_TYPES: EventType[] = [
@@ -84,6 +101,9 @@ export function AdminLayout({
   onToggle,
   onNavigate,
   onRefresh,
+  account,
+  onSignOut,
+  updatedAt,
   children,
 }: {
   section: AdminSection;
@@ -93,44 +113,100 @@ export function AdminLayout({
   onToggle: () => void;
   onNavigate: (s: AdminSection) => void;
   onRefresh: () => void;
+  account?: { name: string; email: string };
+  onSignOut?: () => void;
+  updatedAt?: Date | null;
   children: ReactNode;
 }) {
   const showLabels = !isDesktop || !collapsed;
   const sidebar = (
     <nav
       aria-label="Admin sections"
-      className={`flex h-full flex-col gap-1 border-r border-border-hairline bg-surface p-2 ${
-        isDesktop ? (collapsed ? "w-16" : "w-56") : "w-64"
+      className={`flex h-full flex-col gap-1 border-r border-border-hairline bg-surface p-3 ${
+        isDesktop ? (collapsed ? "w-[72px]" : "w-64") : "w-72"
       }`}
     >
-      <a href="#/" className="mb-2 flex items-center gap-2 px-2 py-2 font-semibold">
-        <Icon name="ShieldCheck" size={20} className="shrink-0 text-brand" aria-hidden />
-        {showLabels ? <span>Sarvam Admin</span> : <span className="sr-only">Sarvam Admin</span>}
+      <a href="#/" className="mb-3 flex items-center gap-3 rounded-md px-2 py-2">
+        <span
+          aria-hidden="true"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-on-brand"
+        >
+          <Icon name="ShieldCheck" size={18} aria-hidden />
+        </span>
+        {showLabels ? (
+          <span className="min-w-0 leading-tight">
+            <span className="block font-semibold">Sarvam</span>
+            <span className="block text-sm text-text-muted">Operator console</span>
+          </span>
+        ) : (
+          <span className="sr-only">Sarvam Admin</span>
+        )}
       </a>
-      {ADMIN_SECTIONS.map((s) => {
-        const active = s === section;
-        return (
-          <a
-            key={s}
-            href={buildAdminHash(s)}
-            aria-current={active ? "page" : undefined}
-            title={NAV[s].label}
-            onClick={() => onNavigate(s)}
-            className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium transition-colors ${
-              active
-                ? "bg-surface-2 text-brand ring-1 ring-border-strong"
-                : "text-text-muted hover:bg-surface-2 hover:text-text"
-            }`}
-          >
-            <Icon name={NAV[s].icon} size={18} className="shrink-0" aria-hidden />
-            {showLabels ? <span>{NAV[s].label}</span> : <span className="sr-only">{NAV[s].label}</span>}
-          </a>
-        );
-      })}
-      <div className="mt-auto flex flex-col gap-1 border-t border-border-hairline pt-2 text-sm">
-        <a href="#/workspace" className="rounded-md px-2 py-2 text-text-muted hover:bg-surface-2 hover:text-text">
-          {showLabels ? "Back to workspace" : <Icon name="ArrowLeft" size={18} label="Back to workspace" aria-hidden={false} />}
+      {NAV_GROUPS.map((g, gi) => (
+        <div key={g.label} className={gi === 0 ? "" : "mt-3"}>
+          {showLabels ? (
+            <p className="label px-3 pb-1">{g.label}</p>
+          ) : gi > 0 ? (
+            <hr className="mx-2 mb-2 border-border-hairline" />
+          ) : null}
+          <div className="flex flex-col gap-0.5">
+            {g.sections.map((s) => {
+              const active = s === section;
+              return (
+                <a
+                  key={s}
+                  href={buildAdminHash(s)}
+                  aria-current={active ? "page" : undefined}
+                  title={NAV[s].label}
+                  onClick={() => onNavigate(s)}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    active
+                      ? "bg-surface-2 text-text"
+                      : "text-text-muted hover:bg-surface-2 hover:text-text"
+                  }`}
+                >
+                  <Icon
+                    name={NAV[s].icon}
+                    size={18}
+                    className={`shrink-0 ${active ? "text-brand" : ""}`}
+                    aria-hidden
+                  />
+                  {showLabels ? <span>{NAV[s].label}</span> : <span className="sr-only">{NAV[s].label}</span>}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <div className="mt-auto flex flex-col gap-1 border-t border-border-hairline pt-3 text-sm">
+        {account && showLabels ? (
+          <div className="mb-1 flex items-center gap-3 px-2 py-1">
+            <Avatar name={account.name || account.email} size="sm" />
+            <span className="min-w-0 leading-tight">
+              <span className="block truncate font-medium">{account.name || account.email}</span>
+              <span className="block truncate text-text-muted">{account.email}</span>
+            </span>
+          </div>
+        ) : null}
+        <a
+          href="#/workspace"
+          title="Back to workspace"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-text-muted hover:bg-surface-2 hover:text-text"
+        >
+          <Icon name="ArrowLeft" size={18} className="shrink-0" aria-hidden />
+          {showLabels ? <span>Back to workspace</span> : <span className="sr-only">Back to workspace</span>}
         </a>
+        {onSignOut ? (
+          <button
+            type="button"
+            onClick={onSignOut}
+            title="Sign out"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-left text-text-muted hover:bg-surface-2 hover:text-text"
+          >
+            <Icon name="LogOut" size={18} className="shrink-0" aria-hidden />
+            {showLabels ? <span>Sign out</span> : <span className="sr-only">Sign out</span>}
+          </button>
+        ) : null}
       </div>
     </nav>
   );
@@ -146,7 +222,7 @@ export function AdminLayout({
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border-hairline bg-surface/85 px-4 py-2 backdrop-blur-md">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <Button
               size="icon"
               variant="ghost"
@@ -155,16 +231,25 @@ export function AdminLayout({
               icon={<Icon name={isDesktop ? (collapsed ? "PanelLeftOpen" : "PanelLeftClose") : "Menu"} size={20} aria-hidden />}
               onClick={onToggle}
             />
-            <span className="label">Operator console</span>
+            <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm">
+              <span className="text-text-muted max-sm:sr-only">Operator console</span>
+              <Icon name="ArrowRight" size={12} className="text-text-muted max-sm:hidden" aria-hidden />
+              <span className="truncate font-semibold">{NAV[section].label}</span>
+            </nav>
           </div>
           <div className="flex items-center gap-2">
+            {updatedAt ? (
+              <span className="mono text-text-muted max-md:hidden">
+                Updated {updatedAt.toISOString().slice(11, 16)} UTC
+              </span>
+            ) : null}
             <Button size="sm" onClick={onRefresh} icon={<Icon name="RefreshCw" size={14} aria-hidden />}>
               <span className="max-sm:sr-only">Refresh</span>
             </Button>
             <ThemeToggle />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-8 sm:py-8">{children}</main>
       </div>
     </div>
   );
@@ -177,7 +262,7 @@ function OverviewPage({ tick }: { tick: number }) {
   const health = useAdminResource(() => adminApi.health(), [tick], POLL_MS);
   return (
     <>
-      <PageTitle title="Overview" />
+      <PageTitle title="Overview" description={SECTION_BLURB.overview} />
       <ResourceView {...overview} label="the overview">
         {(o) => <OverviewView overview={o} health={health.data} />}
       </ResourceView>
@@ -233,7 +318,7 @@ function RunsPage({ tick, runId, bump }: { tick: number; runId: string | null; b
   if (runId) {
     return (
       <>
-        <PageTitle title="Run detail" />
+        <PageTitle title="Run detail" description="One run: its outcome, spend, and what you can do with it." />
         <ResourceView {...detail} label="the run">
           {(d) => (
             <>
@@ -274,7 +359,7 @@ function RunsPage({ tick, runId, bump }: { tick: number; runId: string | null; b
   }
   return (
     <>
-      <PageTitle title="Runs" />
+      <PageTitle title="Runs" description={SECTION_BLURB.runs} />
       {mut.error ? <Banner tone="bad">{mut.error}</Banner> : null}
       <ResourceView {...list} label="runs">
         {(page) => (
@@ -335,7 +420,7 @@ function UsersPage({ tick, bump, currentUserId }: { tick: number; bump: () => vo
   const a = pending?.action;
   return (
     <>
-      <PageTitle title="Users" />
+      <PageTitle title="Users" description={SECTION_BLURB.users} />
       <ResourceView {...users} label="users">
         {(rows) => (
           <UsersView
@@ -406,7 +491,7 @@ function CostsPage({ tick }: { tick: number }) {
   const costs = useAdminResource(() => adminApi.costs(days), [days, tick], POLL_MS);
   return (
     <>
-      <PageTitle title="Costs" />
+      <PageTitle title="Costs" description={SECTION_BLURB.costs} />
       {mut.error ? <Banner tone="bad">{mut.error}</Banner> : null}
       <ResourceView {...costs} label="costs">
         {(c) => (
@@ -426,7 +511,7 @@ function ActivityPage({ tick }: { tick: number }) {
   const feed = useAdminResource(() => adminApi.activity({ type, limit: 100 }), [type, tick], POLL_MS);
   return (
     <>
-      <PageTitle title="Activity" />
+      <PageTitle title="Activity" description={SECTION_BLURB.activity} />
       <ResourceView {...feed} label="activity">
         {(a) => <ActivityView activity={a} type={type} onType={setType} types={EVENT_TYPES} />}
       </ResourceView>
@@ -438,7 +523,7 @@ function AuditPage({ tick }: { tick: number }) {
   const audit = useAdminResource(() => adminApi.audit({ limit: 100 }), [tick], POLL_MS);
   return (
     <>
-      <PageTitle title="Audit log" />
+      <PageTitle title="Audit log" description={SECTION_BLURB.audit} />
       <ResourceView {...audit} label="the audit log">
         {(a) => <AuditView audit={a} />}
       </ResourceView>
@@ -458,7 +543,7 @@ function SettingsPage({ tick, bump }: { tick: number; bump: () => void }) {
 
   return (
     <>
-      <PageTitle title="Settings" />
+      <PageTitle title="Settings" description={SECTION_BLURB.settings} />
       <ResourceView {...settings} label="settings">
         {(s) =>
           values ? (
@@ -497,7 +582,7 @@ function HealthPage({ tick }: { tick: number }) {
   const health = useAdminResource(() => adminApi.health(), [tick], POLL_MS);
   return (
     <>
-      <PageTitle title="Health" />
+      <PageTitle title="Health" description={SECTION_BLURB.health} />
       <ResourceView {...health} label="health">
         {(h) => <HealthView health={h} />}
       </ResourceView>
@@ -532,13 +617,18 @@ export function AdminGate({ kind }: { kind: "signin" | "forbidden" }) {
 }
 
 export function AdminConsole() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const isDesktop = useMediaQuery(`(min-width: ${LG_MIN}px)`);
   const [route, setRoute] = useState(() => parseAdminRoute(window.location.hash));
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [tick, setTick] = useState(0);
   const bump = () => setTick((t) => t + 1);
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setUpdatedAt(new Date());
+  }, [tick]);
 
   useEffect(() => {
     const onHash = () => {
@@ -568,6 +658,13 @@ export function AdminConsole() {
       onToggle={() => (isDesktop ? setCollapsed((c) => !c) : setDrawerOpen((o) => !o))}
       onNavigate={() => setDrawerOpen(false)}
       onRefresh={() => setTick((t) => t + 1)}
+      account={{ name: user.display_name, email: user.email }}
+      updatedAt={updatedAt}
+      onSignOut={() => {
+        void logout().finally(() => {
+          window.location.hash = "#/signin";
+        });
+      }}
     >
       {route.section === "overview" ? <OverviewPage tick={tick} /> : null}
       {route.section === "runs" ? <RunsPage tick={tick} runId={route.runId} bump={bump} /> : null}
