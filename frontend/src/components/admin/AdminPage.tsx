@@ -94,7 +94,7 @@ export function AdminPage() {
         </header>
 
         <main className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-surface border border-border-hairline rounded-[1.3rem] p-7 sm:p-8 shadow-sm">
+          <div className="w-full max-w-md bg-surface border border-border-hairline rounded-xl p-7 sm:p-8 shadow-sm">
             <div className="text-center mb-6">
               <div className="w-12 h-12 rounded-xl bg-accent text-brand flex items-center justify-center mx-auto mb-4">
                 <Icon name="ShieldCheck" size={24} aria-hidden />
@@ -126,7 +126,7 @@ export function AdminPage() {
               <div>
                 <label
                   htmlFor="history-login-email"
-                  className="block text-sm font-semibold text-text mb-1.5 uppercase tracking-wider"
+                  className="block text-sm font-semibold text-text mb-1.5 tracking-normal"
                 >
                   Researcher ID / Email
                 </label>
@@ -145,7 +145,7 @@ export function AdminPage() {
               <div>
                 <label
                   htmlFor="history-login-password"
-                  className="block text-sm font-semibold text-text mb-1.5 uppercase tracking-wider"
+                  className="block text-sm font-semibold text-text mb-1.5 tracking-normal"
                 >
                   Password
                 </label>
@@ -173,7 +173,7 @@ export function AdminPage() {
               <button
                 type="submit"
                 disabled={loginSubmitting}
-                className="w-full h-11 mt-2 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                className="btn btn-primary btn-lg btn-block mt-2"
               >
                 {loginSubmitting ? (
                   <>
@@ -230,7 +230,7 @@ export function AdminPage() {
             <span className="font-bold text-xl tracking-tight text-text">SARVAM</span>
           </a>
           <span className="text-border-hairline">/</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <span className="text-sm font-semibold tracking-normal text-text-muted">
             Investigation History
           </span>
         </div>
@@ -240,7 +240,7 @@ export function AdminPage() {
             type="button"
             onClick={() => fetchRuns(true)}
             disabled={refreshing || loading}
-            className="h-8 px-3 border border-border-hairline hover:bg-surface text-text-muted text-sm font-medium rounded-lg flex items-center gap-1.5 transition-colors disabled:opacity-50"
+            className="btn btn-secondary btn-sm"
             title="Refresh runs list"
           >
             <Icon name="RefreshCw" size={14} className={refreshing ? "animate-spin" : ""} />
@@ -250,7 +250,7 @@ export function AdminPage() {
           {user.role === "admin" ? (
             <a
               href="#/admin"
-              className="h-8 px-3 border border-border-hairline hover:bg-surface text-text-muted hover:text-text text-sm font-medium rounded-lg flex items-center gap-1.5 transition-colors"
+              className="btn btn-secondary btn-sm"
             >
               <Icon name="ShieldCheck" size={14} aria-hidden />
               <span className="hidden sm:inline">Admin console</span>
@@ -259,7 +259,7 @@ export function AdminPage() {
 
           <a
             href="#/workspace"
-            className="h-8 px-3.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg flex items-center gap-1.5 transition-all shadow-sm"
+            className="btn btn-primary btn-sm"
           >
             <Icon name="Plus" size={14} />
             <span>New Run</span>
@@ -308,7 +308,7 @@ export function AdminPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Filter by question or ID..."
-              className="w-full h-9 px-3.5 bg-surface-2 border border-border-hairline rounded-lg text-sm text-text placeholder:text-text-muted/60 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
+              className="btn btn-secondary btn-sm btn-block"
             />
           </div>
         </div>
@@ -320,7 +320,7 @@ export function AdminPage() {
           </div>
         )}
 
-        <div className="bg-surface border border-border-hairline rounded-[1.3rem] overflow-hidden shadow-sm">
+        <div className="bg-surface border border-border-hairline rounded-xl overflow-hidden shadow-sm">
           {loading ? (
             <div className="p-12 text-center text-sm text-text-muted flex flex-col items-center gap-3">
               <Icon name="RefreshCw" size={20} className="animate-spin text-brand" />
@@ -340,7 +340,7 @@ export function AdminPage() {
               {runs.length === 0 ? (
                 <a
                   href="#/workspace"
-                  className="mt-3 px-4 py-2 bg-brand text-white rounded-lg font-medium text-sm hover:opacity-90 transition-colors"
+                  className="btn btn-primary mt-3"
                 >
                   Start a Research Run
                 </a>
@@ -350,7 +350,7 @@ export function AdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-border-hairline bg-surface-2/60 text-text-muted font-semibold uppercase tracking-wider text-sm">
+                  <tr className="border-b border-border-hairline bg-surface-2/60 text-text-muted font-semibold tracking-normal text-sm">
                     <th className="py-3 px-4">Run ID</th>
                     <th className="py-3 px-4">Research Question</th>
                     <th className="py-3 px-3">Mode</th>

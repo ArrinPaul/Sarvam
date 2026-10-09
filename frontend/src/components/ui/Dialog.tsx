@@ -5,7 +5,7 @@ import { getFocusableElements, nextFocusedElement, saveFocus, restoreFocus } fro
 export type DialogPlacement = "center" | "right" | "left" | "bottom";
 
 const PLACEMENT: Record<DialogPlacement, string> = {
-  center: "anim-in m-auto rounded-[1.3rem] border border-border-hairline shadow-elevation bg-surface p-0",
+  center: "anim-in m-auto rounded-xl border border-border-hairline shadow-elevation bg-surface p-0",
   right:
     "anim-drawer fixed inset-y-0 right-0 z-30 m-0 h-full max-h-dvh w-full max-w-[32rem] border-l border-border-hairline bg-surface/95 backdrop-blur-md shadow-elevation",
   left: "anim-in fixed inset-y-0 left-0 z-30 m-0 h-full max-h-dvh w-full max-w-[22rem] border-r border-border-hairline bg-surface",
@@ -103,7 +103,7 @@ export function Dialog({ isOpen, onClose, title, children, placement = "center",
         <div className="mb-4 flex items-center justify-between pb-3 border-b border-border-hairline">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand" />
-            <h2 className="text-base font-semibold text-text uppercase tracking-wider">{title}</h2>
+            <h2 className="text-base font-semibold text-text tracking-normal">{title}</h2>
           </div>
           <Button onClick={onClose} className="rounded-lg px-3 py-1 text-sm font-semibold">Close</Button>
         </div>

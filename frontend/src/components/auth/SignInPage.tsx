@@ -34,11 +34,6 @@ export function SignInPage() {
 
   return (
     <div className="min-h-screen bg-bg flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
-      {/* Background ambient mesh */}
-      <div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-accent/40 rounded-full blur-[100px] pointer-events-none"
-        aria-hidden="true"
-      />
 
       <div className="w-full max-w-md relative z-10">
         {/* Brand header */}
@@ -60,7 +55,7 @@ export function SignInPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-surface border border-border-hairline rounded-[1.3rem] p-7 shadow-sm">
+        <div className="bg-surface border border-border-hairline rounded-xl p-7 shadow-sm">
           {error && (
             <div className="mb-5 p-3.5 bg-bad-bg border border-bad-border rounded-xl text-sm text-bad-fg flex items-start gap-2.5">
               <Icon name="AlertTriangle" size={16} className="mt-0.5 shrink-0 text-bad-fg" />
@@ -80,7 +75,7 @@ export function SignInPage() {
             <div>
               <label
                 htmlFor="signin-email"
-                className="block text-sm font-semibold text-text mb-1.5 uppercase tracking-wider"
+                className="block text-sm font-semibold text-text mb-1.5 tracking-normal"
               >
                 Email Address
               </label>
@@ -100,7 +95,7 @@ export function SignInPage() {
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="signin-password"
-                  className="block text-sm font-semibold text-text uppercase tracking-wider"
+                  className="block text-sm font-semibold text-text tracking-normal"
                 >
                   Password
                 </label>
@@ -129,7 +124,7 @@ export function SignInPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full h-11 mt-2 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="btn btn-primary btn-lg btn-block mt-2"
             >
               {submitting ? (
                 <>

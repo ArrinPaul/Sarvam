@@ -27,7 +27,7 @@ export function AccountUsage({
     <section className="rounded-xl border border-border-hairline bg-surface p-6" aria-labelledby="usage-h">
       <h2
         id="usage-h"
-        className="mb-4 flex items-center gap-2 text-base font-semibold uppercase tracking-wider text-text"
+        className="mb-4 flex items-center gap-2 text-base font-semibold tracking-normal text-text"
       >
         <Icon name="Coins" size={18} className="text-brand" aria-hidden />
         Usage &amp; quota
@@ -82,7 +82,7 @@ export function AccountUsage({
 function Tile({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border-hairline bg-bg p-4">
-      <span className="mb-1 block text-sm font-medium uppercase tracking-wider text-text-muted">
+      <span className="mb-1 block text-sm font-medium tracking-normal text-text-muted">
         {label}
       </span>
       <span className="mono text-lg font-semibold">{value}</span>

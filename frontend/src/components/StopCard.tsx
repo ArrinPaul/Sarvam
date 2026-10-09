@@ -180,7 +180,7 @@ export function StopCard({
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-sm font-mono font-medium border ${badgeBg}`}>
-                <span className="uppercase">{heading}</span>
+                <span className="">{heading}</span>
               </span>
             </div>
             <h2 className={`font-display text-2xl sm:text-3xl font-bold leading-tight ${statusColor}`}>
@@ -208,7 +208,7 @@ export function StopCard({
       <div className="grid gap-6 p-5 sm:p-6 md:grid-cols-2">
         {/* Column 1: Why the research stopped */}
         <section aria-labelledby="stop-why" className="space-y-2">
-          <h3 id="stop-why" className="font-mono text-sm tracking-wider uppercase text-text-muted">
+          <h3 id="stop-why" className="font-mono text-sm tracking-normal text-text-muted">
             Why the research stopped
           </h3>
           <p className="text-sm sm:text-base text-text leading-relaxed font-normal">
@@ -228,7 +228,7 @@ export function StopCard({
 
         {/* Column 2: Critical slots */}
         <section aria-labelledby="stop-slots" className="space-y-2">
-          <h3 id="stop-slots" className="font-mono text-sm tracking-wider uppercase text-text-muted">
+          <h3 id="stop-slots" className="font-mono text-sm tracking-normal text-text-muted">
             Key points
           </h3>
           <div className="flex gap-2">
@@ -269,7 +269,7 @@ export function StopCard({
       {/* Bottom Details Row: What is missing & Challenges */}
       <div className="border-t border-border-hairline p-5 sm:p-6 grid gap-6 md:grid-cols-2">
         <section aria-labelledby="stop-missing" className="space-y-2">
-          <h3 id="stop-missing" className="font-mono text-sm tracking-wider uppercase text-text-muted">
+          <h3 id="stop-missing" className="font-mono text-sm tracking-normal text-text-muted">
             What is missing
           </h3>
           {missing ? (
@@ -289,7 +289,7 @@ export function StopCard({
         </section>
 
         <section aria-labelledby="stop-change" className="space-y-2">
-          <h3 id="stop-change" className="font-mono text-sm tracking-wider uppercase text-text-muted">
+          <h3 id="stop-change" className="font-mono text-sm tracking-normal text-text-muted">
             What could change this conclusion
           </h3>
           {wouldChange.length > 0 ? (

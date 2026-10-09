@@ -14,7 +14,7 @@ export function ArchitecturePage() {
             <span className="font-bold text-xl tracking-tight text-text">SARVAM</span>
           </a>
           <span className="text-border-hairline">/</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <span className="text-sm font-semibold tracking-normal text-text-muted">
             Architecture
           </span>
         </div>
@@ -38,7 +38,7 @@ export function ArchitecturePage() {
           {user ? (
             <a
               href="#/workspace"
-              className="px-3.5 py-1.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Workspace
             </a>
@@ -46,7 +46,7 @@ export function ArchitecturePage() {
             <a
               href="#/signin"
               onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-              className="px-3.5 py-1.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Sign In
             </a>
@@ -58,7 +58,7 @@ export function ArchitecturePage() {
       {/* Main Content */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="border-b border-border-hairline pb-8 mb-10">
-          <p className="font-mono text-sm uppercase tracking-wider text-brand font-semibold mb-2">
+          <p className="font-mono text-sm tracking-normal text-brand font-semibold mb-2">
             System Design &amp; Engine Internals
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text">
@@ -79,7 +79,7 @@ export function ArchitecturePage() {
             <div className="p-6 rounded-xl border border-border-hairline bg-surface">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-sm font-bold text-brand">Phase 01</span>
-                <span className="font-mono text-sm text-text-muted uppercase">Planning</span>
+                <span className="font-mono text-sm text-text-muted">Planning</span>
               </div>
               <h3 className="text-lg font-bold text-text">Dimension &amp; Slot Decomposition</h3>
               <p className="text-sm text-text-muted mt-2 leading-relaxed">
@@ -90,7 +90,7 @@ export function ArchitecturePage() {
             <div className="p-6 rounded-xl border border-border-hairline bg-surface">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-sm font-bold text-brand">Phase 02</span>
-                <span className="font-mono text-sm text-text-muted uppercase">Extraction</span>
+                <span className="font-mono text-sm text-text-muted">Extraction</span>
               </div>
               <h3 className="text-lg font-bold text-text">Passage Retrieval &amp; Character Offsets</h3>
               <p className="text-sm text-text-muted mt-2 leading-relaxed">
@@ -101,7 +101,7 @@ export function ArchitecturePage() {
             <div className="p-6 rounded-xl border border-border-hairline bg-surface">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-sm font-bold text-brand">Phase 03</span>
-                <span className="font-mono text-sm text-text-muted uppercase">Synthesis</span>
+                <span className="font-mono text-sm text-text-muted">Synthesis</span>
               </div>
               <h3 className="text-lg font-bold text-text">Origin Clustering &amp; Conflict Detection</h3>
               <p className="text-sm text-text-muted mt-2 leading-relaxed">
@@ -112,7 +112,7 @@ export function ArchitecturePage() {
             <div className="p-6 rounded-xl border border-border-hairline bg-surface">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-sm font-bold text-brand">Phase 04</span>
-                <span className="font-mono text-sm text-text-muted uppercase">Verdict</span>
+                <span className="font-mono text-sm text-text-muted">Verdict</span>
               </div>
               <h3 className="text-lg font-bold text-text">Adversarial Counter-Analysis &amp; Report Generation</h3>
               <p className="text-sm text-text-muted mt-2 leading-relaxed">
@@ -153,7 +153,7 @@ export function ArchitecturePage() {
         </section>
 
         {/* Call to action */}
-        <div className="p-8 rounded-[1.3rem] border border-border-hairline bg-surface-2 text-center">
+        <div className="p-8 rounded-xl border border-border-hairline bg-surface-2 text-center">
           <h2 className="text-xl font-bold text-text">
             Explore the API Documentation
           </h2>
@@ -165,14 +165,14 @@ export function ArchitecturePage() {
               href="http://localhost:8000/docs"
               target="_blank"
               rel="noreferrer"
-              className="px-5 py-2.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm flex items-center gap-2"
+              className="btn btn-primary btn-lg"
             >
               <span>Open OpenAPI Docs</span>
               <Icon name="ArrowRight" size={16} aria-hidden />
             </a>
             <a
               href="#/workspace"
-              className="px-5 py-2.5 border border-border-hairline bg-surface hover:bg-surface-2 text-text font-medium text-sm rounded-lg transition-colors"
+              className="btn btn-secondary btn-lg"
             >
               Open Research Workspace
             </a>

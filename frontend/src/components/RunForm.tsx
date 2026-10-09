@@ -196,7 +196,7 @@ export function RunForm() {
             <button
               key={x.label}
               type="button"
-              className="inline-flex items-center rounded-lg border border-border-hairline bg-surface px-3 py-1.5 text-sm font-medium text-text-muted transition-all hover:border-brand-secondary hover:text-brand-secondary hover:bg-surface-2 active:scale-98 pointer-coarse:min-h-11"
+              className="btn btn-secondary btn-sm pointer-coarse:min-h-11"
               onClick={() => {
                 setQuestion(x.q);
                 setFieldError(null);

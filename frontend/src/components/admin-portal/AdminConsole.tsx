@@ -129,7 +129,7 @@ export function AdminLayout({
       <a href="#/" className="mb-3 flex items-center gap-3 rounded-md px-2 py-2">
         <span
           aria-hidden="true"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-on-brand"
+          className="btn btn-primary btn-sm w-9 shrink-0"
         >
           <Icon name="ShieldCheck" size={18} aria-hidden />
         </span>

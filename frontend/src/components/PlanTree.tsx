@@ -36,7 +36,7 @@ export function PlanTree({
             {slots
               .filter((s) => s.dimension_id === d.id)
               .map((s) => (
-                <div key={s.id} id={`slot-${s.id}`} className="flex flex-col rounded-[1.3rem] border border-border-hairline bg-surface p-4 transition-colors hover:border-border-strong">
+                <div key={s.id} id={`slot-${s.id}`} className="flex flex-col rounded-xl border border-border-hairline bg-surface p-4 transition-colors hover:border-border-strong">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <strong className="text-brand">{s.name}</strong>
                     {s.critical ? <Badge>critical</Badge> : null}
@@ -52,7 +52,7 @@ export function PlanTree({
                   
                   {tasks.filter((t) => t.slot_id === s.id).length > 0 && (
                     <div className="mt-auto pt-3 border-t border-border-hairline">
-                      <h5 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-2.5">Queries</h5>
+                      <h5 className="text-sm font-semibold text-text-muted tracking-normal mb-2.5">Queries</h5>
                       <ul className="flex flex-col gap-2">
                         {tasks
                           .filter((t) => t.slot_id === s.id)

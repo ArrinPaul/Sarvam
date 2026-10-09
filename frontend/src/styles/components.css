@@ -7,56 +7,117 @@
 .label {
   font-size: 0.875rem; /* 14px floor */
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--color-text-muted);
 }
 
 /* Polished Surface & Typography Utilities */
 
 .glass-card {
-  background-color: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 20px -2px var(--shadow-color), 0 0 0 1px rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-hairline);
   border-radius: var(--radius);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-elevation);
 }
 
-:root[data-theme="light"] .glass-card,
-:root:not(.dark) .glass-card {
-  box-shadow: 0 2px 12px -2px var(--shadow-color), 0 0 0 1px rgba(0, 0, 0, 0.02);
+.glass-card-hover {
+  transition: border-color 0.15s ease;
 }
 
 .glass-card-hover:hover {
-  border-color: var(--ring);
-  box-shadow: 0 8px 30px -4px var(--shadow-color), 0 0 20px var(--shadow-color);
-  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
 }
 
 .hero-gradient-text {
-  background: linear-gradient(135deg, var(--foreground) 30%, var(--primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-text);
 }
 
 .brand-icon-gradient {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--ring) 100%);
+  background: var(--color-brand);
+  color: var(--color-on-brand);
 }
 
 .brand-badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  background: var(--accent);
-  color: var(--accent-foreground);
-  border: 1px solid var(--border);
-  box-shadow: 0 0 15px var(--shadow-color);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hairline);
 }
 
 .cta-gradient-card {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--card) 100%);
+  background: var(--color-surface-2);
+}
+
+/* One button system. Heights: sm 32, md 40, lg 44. Radius 8. Primary is the only filled style. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.btn-sm {
+  height: 2rem;
+  padding: 0 0.75rem;
+}
+.btn-lg {
+  height: 2.75rem;
+  padding: 0 1.25rem;
+}
+.btn-primary {
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+}
+.btn-primary:hover {
+  filter: brightness(1.12);
+}
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+.btn-secondary:hover {
+  background: var(--color-surface-2);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+.btn-ghost:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+.btn-danger {
+  background: var(--color-bad-bg);
+  color: var(--color-bad-fg);
+  border-color: var(--color-bad-border);
+}
+.btn-block {
+  width: 100%;
+}
+@media (pointer: coarse) {
+  .btn,
+  .btn-sm {
+    min-height: 2.75rem;
+  }
 }

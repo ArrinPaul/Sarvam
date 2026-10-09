@@ -24,7 +24,7 @@ export function WorkspacePage() {
         </header>
 
         <main className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-lg bg-surface border border-border-hairline rounded-[1.3rem] p-8 shadow-sm text-center">
+          <div className="w-full max-w-lg bg-surface border border-border-hairline rounded-xl p-8 shadow-sm text-center">
             <div className="w-12 h-12 rounded-xl bg-accent text-brand flex items-center justify-center mx-auto mb-5">
               <Icon name="ShieldCheck" size={24} aria-hidden />
             </div>
@@ -40,7 +40,7 @@ export function WorkspacePage() {
               <a
                 href="#/signin"
                 onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-                className="w-full sm:w-auto px-5 py-2.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm flex items-center justify-center gap-2"
+                className="btn btn-primary btn-lg btn-block sm:w-auto"
               >
                 <span>Sign In to Workspace</span>
                 <Icon name="ArrowRight" size={16} aria-hidden />
@@ -48,7 +48,7 @@ export function WorkspacePage() {
               <a
                 href="#/register"
                 onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-                className="w-full sm:w-auto px-5 py-2.5 border border-border-hairline bg-surface-2 hover:bg-surface text-text font-medium text-sm rounded-lg transition-colors flex items-center justify-center"
+                className="btn btn-secondary btn-lg btn-block sm:w-auto"
               >
                 Create Account
               </a>
@@ -82,7 +82,7 @@ export function WorkspacePage() {
             <span className="font-bold text-xl tracking-tight text-text">SARVAM</span>
           </a>
           <span className="text-border-hairline">/</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <span className="text-sm font-semibold tracking-normal text-text-muted">
             Workspace
           </span>
         </div>
@@ -91,7 +91,7 @@ export function WorkspacePage() {
           {user.role === "admin" ? (
             <a
               href="#/admin"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-hairline hover:bg-surface text-text-muted hover:text-text text-sm font-medium rounded-lg transition-colors"
+              className="btn btn-secondary btn-sm"
             >
               <Icon name="ShieldCheck" size={15} aria-hidden />
               <span className="hidden sm:inline">Admin console</span>
@@ -100,7 +100,7 @@ export function WorkspacePage() {
 
           <a
             href="#/history"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-hairline hover:bg-surface text-text-muted hover:text-text text-sm font-medium rounded-lg transition-colors"
+            className="btn btn-secondary btn-sm"
           >
             <Icon name="Clock" size={15} aria-hidden />
             <span className="hidden sm:inline">Investigation History</span>
@@ -142,7 +142,7 @@ export function WorkspacePage() {
           </p>
         </div>
 
-        <div className="bg-surface border border-border-hairline rounded-[1.3rem] p-6 sm:p-8 shadow-sm">
+        <div className="bg-surface border border-border-hairline rounded-xl p-6 sm:p-8 shadow-sm">
           <RunForm />
         </div>
 

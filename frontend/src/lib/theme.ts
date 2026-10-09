@@ -12,8 +12,8 @@ export const STORAGE_KEY = "theme";
 
 /** Browser chrome colour per resolved theme; must equal the page background token. */
 export const THEME_COLOR: Record<ResolvedTheme, string> = {
-  light: "#ffffff",
-  dark: "#000000",
+  light: "#F8FAFC",
+  dark: "#0B1120",
 };
 
 /** Anything other than an explicit light or dark (missing, corrupted, hand-edited) means system. */

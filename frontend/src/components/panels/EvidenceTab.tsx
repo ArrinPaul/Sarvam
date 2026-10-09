@@ -28,7 +28,7 @@ export function EvidenceTab({
   return (
     <div className="flex flex-col gap-6">
       {slotFilter ? (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.3rem] border border-brand/20 bg-surface-2 p-3 text-base">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-brand/20 bg-surface-2 p-3 text-base">
           <p>
             Showing {claims.length} of {Object.keys(view.claims).length} claims for <strong>{names.get(slotFilter) ?? slotFilter}</strong>.
           </p>

@@ -184,7 +184,7 @@ export function AppHeader({
             </a>
             <a
               href="#/register"
-              className="text-sm font-medium text-white bg-brand hover:opacity-90 px-3.5 py-1.5 rounded-lg transition-colors shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Register
             </a>

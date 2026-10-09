@@ -43,7 +43,7 @@ export function RailContent({
             <ModeBadge mode={run?.mode ?? null} pulsing={running} />
           </div>
         ) : null}
-        <h2 id="question-h" className="font-mono text-sm tracking-wider uppercase text-text-muted mb-1">
+        <h2 id="question-h" className="font-mono text-sm tracking-normal text-text-muted mb-1">
           Research Question
         </h2>
         {hydrating ? (
@@ -65,7 +65,7 @@ export function RailContent({
       {run ? (
         // Announced once by the shell's live region, so this box is not a live region itself.
         <section aria-label="Now" className="rounded-lg border border-border-hairline bg-surface-2/60 p-3">
-          <h2 className="font-mono text-sm tracking-wider uppercase text-text-muted mb-1">Now</h2>
+          <h2 className="font-mono text-sm tracking-normal text-text-muted mb-1">Now</h2>
           <p className="text-sm text-text leading-snug">{view.nowReason || (running ? "Waiting for the first step..." : "No further steps.")}</p>
         </section>
       ) : null}

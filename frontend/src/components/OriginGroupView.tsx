@@ -56,7 +56,7 @@ export function OriginGroupView({
   const settled = useSettled();
   return (
     <section aria-label={`Origin groups for ${slotName}`}>
-      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-3 p-4 bg-surface rounded-[1.3rem] border border-border-hairline">
+      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-3 p-4 bg-surface rounded-xl border border-border-hairline">
         <div className="flex items-center gap-4">
           <div className="px-3 py-1.5 rounded-xl bg-surface-2 border border-border-hairline text-center">
             <p className="text-3xl font-bold leading-none">{total}</p>

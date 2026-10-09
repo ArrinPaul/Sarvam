@@ -14,7 +14,7 @@ export function MethodologyPage() {
             <span className="font-bold text-xl tracking-tight text-text">SARVAM</span>
           </a>
           <span className="text-border-hairline">/</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <span className="text-sm font-semibold tracking-normal text-text-muted">
             Methodology
           </span>
         </div>
@@ -38,7 +38,7 @@ export function MethodologyPage() {
           {user ? (
             <a
               href="#/workspace"
-              className="px-3.5 py-1.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Workspace
             </a>
@@ -46,7 +46,7 @@ export function MethodologyPage() {
             <a
               href="#/signin"
               onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-              className="px-3.5 py-1.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Sign In
             </a>
@@ -58,7 +58,7 @@ export function MethodologyPage() {
       {/* Main Content */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="border-b border-border-hairline pb-8 mb-10">
-          <p className="font-mono text-sm uppercase tracking-wider text-brand font-semibold mb-2">
+          <p className="font-mono text-sm tracking-normal text-brand font-semibold mb-2">
             Epistemic Rigor &amp; Proof
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text">
@@ -148,7 +148,7 @@ export function MethodologyPage() {
         </section>
 
         {/* Section 3: Call to Action */}
-        <div className="p-8 rounded-[1.3rem] border border-border-hairline bg-surface-2 text-center">
+        <div className="p-8 rounded-xl border border-border-hairline bg-surface-2 text-center">
           <h2 className="text-xl font-bold text-text">
             Test the Methodology in Action
           </h2>
@@ -158,14 +158,14 @@ export function MethodologyPage() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#/workspace"
-              className="px-5 py-2.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm flex items-center gap-2"
+              className="btn btn-primary btn-lg"
             >
               <span>Launch Research Workspace</span>
               <Icon name="ArrowRight" size={16} aria-hidden />
             </a>
             <a
               href="#/benchmarks"
-              className="px-5 py-2.5 border border-border-hairline bg-surface hover:bg-surface-2 text-text font-medium text-sm rounded-lg transition-colors"
+              className="btn btn-secondary btn-lg"
             >
               View Deterministic Replays
             </a>

@@ -39,7 +39,7 @@ export function RunProgress({
     <Card as="section" aria-labelledby="progress-h" pad="md" className="no-print hidden md:block">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p id="progress-h" className="font-mono text-sm tracking-wider uppercase text-text-muted flex items-center gap-1.5">
+          <p id="progress-h" className="font-mono text-sm tracking-normal text-text-muted flex items-center gap-1.5">
             <Icon name="Activity" size={14} className={live ? "blink text-brand" : "text-text-muted"} aria-hidden />
             <span>{live ? "Now" : "Last step"}</span>
           </p>

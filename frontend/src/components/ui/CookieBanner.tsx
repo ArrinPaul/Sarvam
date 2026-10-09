@@ -81,7 +81,7 @@ export function CookieBanner() {
             <Button
               size="sm"
               onClick={() => saveConsent(false)}
-              className="bg-brand text-white font-medium hover:opacity-95 h-8 px-4 rounded-lg sm:rounded-full"
+              className="btn btn-primary btn-sm"
             >
               Accept
             </Button>
@@ -157,7 +157,7 @@ export function CookieBanner() {
               <Button
                 size="sm"
                 onClick={() => saveConsent(diagnosticsChecked)}
-                className="bg-brand text-white hover:opacity-95"
+                className="bg-brand text-on-brand hover:opacity-95"
               >
                 Save Preferences
               </Button>

@@ -130,7 +130,7 @@ export function AccountPage() {
           <div className="flex items-center gap-3">
             <a
               href="#/workspace"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-text px-3 py-2 rounded-lg border border-border-hairline hover:bg-surface transition-colors"
+              className="btn btn-secondary"
             >
               <Icon name="ArrowLeft" size={16} aria-hidden />
               <span>Workspace</span>
@@ -166,7 +166,7 @@ export function AccountPage() {
             </p>
             <a
               href="#/signin"
-              className="inline-flex items-center justify-center text-sm font-medium text-white bg-brand px-4 py-2 rounded-lg hover:opacity-95 transition-opacity"
+              className="btn btn-primary"
             >
               Sign In to Your Account
             </a>
@@ -177,14 +177,14 @@ export function AccountPage() {
           <div className="space-y-8">
             {/* Account Overview Card */}
             <section className="bg-surface border border-border-hairline rounded-xl p-6">
-              <h2 className="text-base font-semibold text-text uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h2 className="text-base font-semibold text-text tracking-normal mb-4 flex items-center gap-2">
                 <Icon name="User" size={18} className="text-brand" aria-hidden />
                 Identity & Access Summary
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
                 <div className="p-4 bg-background border border-border-hairline rounded-lg">
-                  <span className="text-sm font-medium text-text-muted uppercase tracking-wider block mb-1">
+                  <span className="text-sm font-medium text-text-muted tracking-normal block mb-1">
                     Email Address
                   </span>
                   <span className="text-sm font-semibold text-text font-mono truncate block" title={user.email}>
@@ -193,7 +193,7 @@ export function AccountPage() {
                 </div>
 
                 <div className="p-4 bg-background border border-border-hairline rounded-lg">
-                  <span className="text-sm font-medium text-text-muted uppercase tracking-wider block mb-1">
+                  <span className="text-sm font-medium text-text-muted tracking-normal block mb-1">
                     User Identifier
                   </span>
                   <span className="text-sm font-mono text-text truncate block" title={user.id}>
@@ -202,7 +202,7 @@ export function AccountPage() {
                 </div>
 
                 <div className="p-4 bg-background border border-border-hairline rounded-lg">
-                  <span className="text-sm font-medium text-text-muted uppercase tracking-wider block mb-1">
+                  <span className="text-sm font-medium text-text-muted tracking-normal block mb-1">
                     System Role
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-sm font-semibold px-2 py-0.5 rounded bg-brand/10 text-brand border border-brand/20">
@@ -217,7 +217,7 @@ export function AccountPage() {
                 </div>
 
                 <div className="p-4 bg-background border border-border-hairline rounded-lg">
-                  <span className="text-sm font-medium text-text-muted uppercase tracking-wider block mb-1">
+                  <span className="text-sm font-medium text-text-muted tracking-normal block mb-1">
                     Member Since
                   </span>
                   <span className="text-sm text-text font-mono">
@@ -230,14 +230,14 @@ export function AccountPage() {
                 </div>
 
                 <div className="p-4 bg-background border border-border-hairline rounded-lg">
-                  <span className="text-sm font-medium text-text-muted uppercase tracking-wider block mb-1">
+                  <span className="text-sm font-medium text-text-muted tracking-normal block mb-1">
                     Active Session Expiry
                   </span>
                   <span className="text-sm text-text font-mono">7 Days (PBKDF2/SHA-256)</span>
                 </div>
 
                 <div className="p-4 bg-background border border-border-hairline rounded-lg">
-                  <span className="text-sm font-medium text-text-muted uppercase tracking-wider block mb-1">
+                  <span className="text-sm font-medium text-text-muted tracking-normal block mb-1">
                     Telemetry & Ads
                   </span>
                   <span className="text-sm text-ok-fg font-medium flex items-center gap-1">
@@ -252,7 +252,7 @@ export function AccountPage() {
 
             {/* Profile Edit Form */}
             <section className="bg-surface border border-border-hairline rounded-xl p-6">
-              <h2 className="text-base font-semibold text-text uppercase tracking-wider mb-2 flex items-center gap-2">
+              <h2 className="text-base font-semibold text-text tracking-normal mb-2 flex items-center gap-2">
                 <Icon name="SlidersHorizontal" size={18} className="text-brand" aria-hidden />
                 Change Personal Details
               </h2>
@@ -271,7 +271,7 @@ export function AccountPage() {
                     required
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-background border border-border-hairline rounded-lg text-sm text-text focus:outline-none focus:ring-2 focus:ring-brand"
+                    className="btn btn-secondary btn-lg btn-block"
                     placeholder="e.g. Arrin Paul"
                   />
                 </div>
@@ -294,7 +294,7 @@ export function AccountPage() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-background border border-border-hairline rounded-lg text-sm text-text focus:outline-none focus:ring-2 focus:ring-brand"
+                        className="btn btn-secondary btn-lg btn-block"
                         placeholder="At least 6 characters"
                       />
                     </div>
@@ -308,7 +308,7 @@ export function AccountPage() {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-background border border-border-hairline rounded-lg text-sm text-text focus:outline-none focus:ring-2 focus:ring-brand"
+                        className="btn btn-secondary btn-lg btn-block"
                         placeholder="Repeat new password"
                       />
                     </div>
@@ -319,7 +319,7 @@ export function AccountPage() {
                   <Button
                     type="submit"
                     disabled={saving}
-                    className="bg-brand text-white font-medium px-5 py-2 rounded-lg hover:opacity-95"
+                    className="btn btn-primary"
                   >
                     {saving ? "Saving Changes..." : "Save Profile Details"}
                   </Button>
@@ -331,7 +331,7 @@ export function AccountPage() {
             <section className="bg-surface border border-border-hairline rounded-xl p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-base font-semibold text-text uppercase tracking-wider mb-1 flex items-center gap-2">
+                  <h2 className="text-base font-semibold text-text tracking-normal mb-1 flex items-center gap-2">
                     <Icon name="LogOut" size={18} className="text-brand" aria-hidden />
                     Current Session &amp; Sign Out
                   </h2>
@@ -390,7 +390,7 @@ export function AccountPage() {
             and dissociate your identity from all past investigations.
           </p>
           <div>
-            <label htmlFor="confirmDeleteField" className="block text-sm font-semibold text-text uppercase tracking-wider mb-1.5">
+            <label htmlFor="confirmDeleteField" className="block text-sm font-semibold text-text tracking-normal mb-1.5">
               Type <span className="text-bad-fg">DELETE</span> to confirm:
             </label>
             <input

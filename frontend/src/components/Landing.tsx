@@ -82,7 +82,7 @@ export function Landing() {
               {user ? (
                 <a
                   href="#/workspace"
-                  className="px-6 py-3.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm inline-flex items-center gap-2"
+                  className="btn btn-primary btn-lg"
                 >
                   <span>Enter Research Workspace</span>
                   <Icon name="ArrowRight" size={16} aria-hidden />
@@ -92,7 +92,7 @@ export function Landing() {
                   <a
                     href="#/signin"
                     onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-                    className="px-6 py-3.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm inline-flex items-center gap-2"
+                    className="btn btn-primary btn-lg"
                   >
                     <span>Start a research inquiry</span>
                     <Icon name="ArrowRight" size={16} aria-hidden />
@@ -100,7 +100,7 @@ export function Landing() {
                   <a
                     href="#/register"
                     onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-                    className="px-5 py-3.5 border border-border-hairline bg-surface hover:bg-surface-2 text-text font-medium text-sm rounded-lg transition-colors"
+                    className="btn btn-secondary btn-lg"
                   >
                     Create account
                   </a>
@@ -132,7 +132,7 @@ export function Landing() {
               {/* Brief Content */}
               <div className="p-6 sm:p-8 space-y-6">
                 <div>
-                  <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-1.5">
+                  <span className="font-mono text-sm tracking-normal text-text-muted block mb-1.5">
                     Research Inquiry
                   </span>
                   <h2 className="font-display text-xl sm:text-2xl font-normal text-text leading-snug">
@@ -143,7 +143,7 @@ export function Landing() {
                 {/* Verdict Callout */}
                 <div className="p-4 rounded-lg bg-bg border border-border-hairline">
                   <div className="flex items-center gap-2.5 mb-2">
-                    <span className="font-mono text-sm uppercase font-semibold text-text-muted">
+                    <span className="font-mono text-sm font-semibold text-text-muted">
                       Verdict
                     </span>
                     <span className="px-2 py-0.5 rounded text-sm font-mono font-bold bg-warn-bg text-warn-fg border border-warn-border">
@@ -157,7 +157,7 @@ export function Landing() {
 
                 {/* Evidence Summary Counters */}
                 <div>
-                  <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-2">
+                  <span className="font-mono text-sm tracking-normal text-text-muted block mb-2">
                     Evidence
                   </span>
                   <div className="flex flex-wrap items-center gap-3 text-sm font-mono text-text-muted">
@@ -175,7 +175,7 @@ export function Landing() {
 
                 {/* Subtle Recurring Concept: Evidence Trail */}
                 <div className="space-y-2.5 pt-2 border-t border-border-hairline">
-                  <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-1">
+                  <span className="font-mono text-sm tracking-normal text-text-muted block mb-1">
                     Evidence Trail (illustrative example)
                   </span>
 
@@ -224,7 +224,7 @@ export function Landing() {
 
                 {/* Sources Row */}
                 <div className="pt-2 border-t border-border-hairline flex flex-wrap items-center gap-2 text-sm font-mono text-text-muted">
-                  <span className="font-semibold text-text uppercase">Sources:</span>
+                  <span className="font-semibold text-text">Sources:</span>
                   <span className="px-2 py-0.5 rounded bg-bg border border-border-hairline">BESCOM</span>
                   <span className="px-2 py-0.5 rounded bg-bg border border-border-hairline">Karnataka EV policy</span>
                   <span className="px-2 py-0.5 rounded bg-bg border border-border-hairline">Fleet operator filing</span>
@@ -253,7 +253,7 @@ export function Landing() {
         {/* Three Lightweight Concepts */}
         <div className="mt-14 pt-8 border-t border-border-hairline grid sm:grid-cols-3 gap-8">
           <div>
-            <span className="font-mono text-sm font-semibold tracking-wider uppercase text-brand block mb-2">
+            <span className="font-mono text-sm font-semibold tracking-normal text-brand block mb-2">
               CLAIMS
             </span>
             <p className="text-base text-text font-medium mb-1">
@@ -265,7 +265,7 @@ export function Landing() {
           </div>
 
           <div>
-            <span className="font-mono text-sm font-semibold tracking-wider uppercase text-brand block mb-2">
+            <span className="font-mono text-sm font-semibold tracking-normal text-brand block mb-2">
               EVIDENCE
             </span>
             <p className="text-base text-text font-medium mb-1">
@@ -277,7 +277,7 @@ export function Landing() {
           </div>
 
           <div>
-            <span className="font-mono text-sm font-semibold tracking-wider uppercase text-brand block mb-2">
+            <span className="font-mono text-sm font-semibold tracking-normal text-brand block mb-2">
               CONFLICTS
             </span>
             <p className="text-base text-text font-medium mb-1">
@@ -320,7 +320,7 @@ export function Landing() {
           <div className="p-6 sm:p-10 space-y-8">
             {/* Inquiry */}
             <div>
-              <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-2">
+              <span className="font-mono text-sm tracking-normal text-text-muted block mb-2">
                 Executive Inquiry
               </span>
               <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-normal text-text leading-snug">
@@ -331,7 +331,7 @@ export function Landing() {
             {/* Verdict Callout */}
             <div className="p-5 rounded-lg bg-bg border border-border-hairline">
               <div className="flex items-center gap-3 mb-2.5">
-                <span className="font-mono text-sm uppercase font-semibold text-text-muted">
+                <span className="font-mono text-sm font-semibold text-text-muted">
                   Official Verdict:
                 </span>
                 <span className="px-2.5 py-0.5 rounded text-sm font-mono font-bold bg-warn-bg text-warn-fg border border-warn-border">
@@ -345,7 +345,7 @@ export function Landing() {
 
             {/* Evidence Counts */}
             <div className="pt-2">
-              <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-3">
+              <span className="font-mono text-sm tracking-normal text-text-muted block mb-3">
                 Evidence Ledger
               </span>
               <div className="grid sm:grid-cols-3 gap-4 text-sm font-mono">
@@ -366,7 +366,7 @@ export function Landing() {
 
             {/* Evidence Trail Breakdown */}
             <div className="pt-4 border-t border-border-hairline">
-              <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-4">
+              <span className="font-mono text-sm tracking-normal text-text-muted block mb-4">
                 Evidence Trail (illustrative example: Claim → Evidence / Conflict → Source)
               </span>
 
@@ -432,7 +432,7 @@ export function Landing() {
 
             {/* Primary Sources Cited List */}
             <div className="pt-4 border-t border-border-hairline">
-              <span className="font-mono text-sm uppercase tracking-wider text-text-muted block mb-3">
+              <span className="font-mono text-sm tracking-normal text-text-muted block mb-3">
                 Primary Sources Cited
               </span>
               <div className="grid sm:grid-cols-3 gap-4 text-sm">
@@ -656,7 +656,7 @@ export function Landing() {
           {user ? (
             <a
               href="#/workspace"
-              className="px-7 py-3.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm inline-flex items-center gap-2"
+              className="btn btn-primary btn-lg"
             >
               <span>Enter Research Workspace</span>
               <Icon name="ArrowRight" size={16} aria-hidden />
@@ -665,7 +665,7 @@ export function Landing() {
             <a
               href="#/signin"
               onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-              className="px-7 py-3.5 bg-brand hover:opacity-90 text-white font-medium text-sm rounded-lg transition-all shadow-sm inline-flex items-center gap-2"
+              className="btn btn-primary btn-lg"
             >
               <span>Start a research inquiry</span>
               <Icon name="ArrowRight" size={16} aria-hidden />

@@ -13,7 +13,7 @@ export function PricingPage() {
             <span className="font-bold text-xl tracking-tight text-text">SARVAM</span>
           </a>
           <span className="text-border-hairline">/</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <span className="text-sm font-semibold tracking-normal text-text-muted">
             Pricing
           </span>
         </div>
@@ -37,7 +37,7 @@ export function PricingPage() {
           {user ? (
             <a
               href="#/workspace"
-              className="px-3.5 py-1.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Workspace
             </a>
@@ -45,7 +45,7 @@ export function PricingPage() {
             <a
               href="#/signin"
               onClick={() => sessionStorage.setItem("sarvam_auth_redirect", "#/workspace")}
-              className="px-3.5 py-1.5 bg-brand hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+              className="btn btn-primary btn-sm"
             >
               Sign In
             </a>
@@ -57,7 +57,7 @@ export function PricingPage() {
       {/* Main Content */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="border-b border-border-hairline pb-8 mb-10">
-          <p className="font-mono text-sm uppercase tracking-wider text-brand font-semibold mb-2">
+          <p className="font-mono text-sm tracking-normal text-brand font-semibold mb-2">
             Costs and limits
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text">

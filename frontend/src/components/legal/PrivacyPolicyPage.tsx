@@ -8,7 +8,7 @@ export function PrivacyPolicyPage() {
         <div className="flex items-center gap-4">
           <a
             href="#/"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border-hairline bg-surface hover:bg-surface-2 text-sm font-medium text-text transition-colors"
+            className="btn btn-secondary btn-sm"
           >
             <Icon name="ArrowDown" size={16} className="rotate-90 text-text-muted" aria-hidden />
             <span>Back to Research</span>
@@ -29,7 +29,7 @@ export function PrivacyPolicyPage() {
       {/* Main Document Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="border-b border-border-hairline pb-8 mb-10">
-          <span className="font-mono text-sm uppercase tracking-wider text-brand font-semibold">
+          <span className="font-mono text-sm tracking-normal text-brand font-semibold">
             Legal &amp; Compliance
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-2">
