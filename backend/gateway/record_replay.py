@@ -39,10 +39,42 @@ class RecordReplay:
         self.record_dir = Path(record_dir)
         self.mode = mode
         self._attempts: dict[tuple[str, str], int] = {}
+        self._models: list[str] | None = None
 
     def _path(self, kind: str, key: str, attempt: int = 0) -> Path:
         suffix = f"-{attempt}" if attempt else ""
         return self.record_dir / f"{kind}-{key[:16]}{suffix}.json"
+
+    def _recorded_models(self) -> list[str]:
+        """Model names present in the recorded LLM requests, sorted, read once."""
+        if self._models is None:
+            found: set[str] = set()
+            for path in self.record_dir.glob("llm-*.json"):
+                try:
+                    model = json.loads(path.read_text(encoding="utf-8"))["key"].get("model")
+                except (OSError, ValueError, KeyError, AttributeError):
+                    continue
+                if isinstance(model, str):
+                    found.add(model)
+            self._models = sorted(found)
+        return self._models
+
+    def _replay_key(self, kind: str, key_material: dict[str, Any]) -> str:
+        """The key to replay under.
+
+        A recording is made with specific model names. If the configured model differs (for
+        example a different .env), the same request is still found by trying the models the
+        recording actually contains. Only the model field is substituted: the messages, which
+        carry the role, prompt id and all inputs, must match exactly (B-39).
+        """
+        key = cache_key(key_material)
+        if kind != "llm" or self._path(kind, key).exists():
+            return key
+        for model in self._recorded_models():
+            alt = cache_key({**key_material, "model": model})
+            if self._path(kind, alt).exists():
+                return alt
+        return key
 
     async def call(
         self,
@@ -56,7 +88,11 @@ class RecordReplay:
         """
         if self.mode is RecordMode.OFF:
             return await live()
-        key = cache_key(key_material)
+        key = (
+            self._replay_key(kind, key_material)
+            if self.mode is RecordMode.REPLAY
+            else cache_key(key_material)
+        )
         # Counted synchronously at call time, so the order is the gateway's admission order.
         attempt = self._attempts.get((kind, key), 0)
         self._attempts[(kind, key)] = attempt + 1
