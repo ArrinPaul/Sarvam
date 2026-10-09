@@ -43,9 +43,9 @@ export function AppHeader({
   const { user, logout } = useAuth();
 
   return (
-    <header className="app-header sticky top-0 z-30 flex min-h-16 w-full items-center justify-between border-b border-border-hairline bg-surface/85 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-2.5">
+    <header className="app-header sticky top-0 z-30 flex min-h-16 w-full items-center justify-between xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] border-b border-border-hairline bg-surface/85 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-2.5">
       {/* Left: Brand */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-3 shrink-0 xl:justify-self-start">
         {runId ? (
           <Button
             size="icon"
@@ -68,19 +68,19 @@ export function AppHeader({
           <h1 className="min-w-0 truncate text-sm font-medium text-text text-center">{question}</h1>
         </Tooltip>
       ) : (
-        <div className="flex-1 hidden md:flex items-center justify-center px-4">
+        <div className="hidden xl:flex items-center justify-center px-4 xl:justify-self-center">
           <nav
             aria-label="Section Navigation"
             className="flex items-center gap-1.5 text-sm font-medium text-text-muted bg-surface-2/90 border border-border-hairline px-2 py-1 rounded-full shadow-xs"
           >
             <a
-              href="#methodology"
+              href="#/methodology"
               className="px-3.5 py-1 rounded-full text-text-muted hover:text-text hover:bg-surface transition-all"
             >
               Methodology
             </a>
             <a
-              href="#architecture"
+              href="#/architecture"
               className="px-3.5 py-1 rounded-full text-text-muted hover:text-text hover:bg-surface transition-all"
             >
               Architecture
@@ -90,7 +90,7 @@ export function AppHeader({
       )}
 
       {/* Right: User Auth & Workspace controls */}
-      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3 xl:justify-self-end">
         {user ? (
           <div className="flex items-center gap-1 sm:gap-2">
             <a
@@ -153,13 +153,13 @@ export function AppHeader({
               >
                 {user.display_name.charAt(0).toUpperCase()}
               </div>
-              <span className="hidden md:inline text-sm font-medium text-text truncate max-w-[120px]">
+              <span className="hidden 2xl:inline text-sm font-medium text-text truncate max-w-[120px]">
                 {user.display_name}
               </span>
             </a>
             <a
               href="#/account"
-              className="text-sm text-text-muted hover:text-text px-2 py-0.5 rounded border border-border-hairline hover:bg-surface transition-colors"
+              className="hidden 2xl:inline-flex text-sm text-text-muted hover:text-text px-2 py-0.5 rounded border border-border-hairline hover:bg-surface transition-colors"
             >
               Account
             </a>

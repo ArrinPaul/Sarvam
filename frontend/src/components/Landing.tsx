@@ -684,10 +684,10 @@ export function Landing() {
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-text-muted">
-            <a href="#methodology" className="hover:text-text transition-colors">
+            <a href="#/methodology" className="hover:text-text transition-colors">
               Methodology
             </a>
-            <a href="#architecture" className="hover:text-text transition-colors">
+            <a href="#/architecture" className="hover:text-text transition-colors">
               Architecture
             </a>
             <a href="#/privacy" className="hover:text-text transition-colors">

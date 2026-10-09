@@ -68,6 +68,10 @@ describe("getRoutePage", () => {
     expect(getRoutePage("#/privacy")).toBe("privacy");
     expect(getRoutePage("#/terms")).toBe("terms");
     expect(getRoutePage("#/cookies")).toBe("cookies");
+    expect(getRoutePage("#/methodology")).toBe("methodology");
+    expect(getRoutePage("#/architecture")).toBe("architecture");
+    expect(getRoutePage("#/benchmarks")).toBe("benchmarks");
+    expect(getRoutePage("#/pricing")).toBe("pricing");
     expect(getRoutePage("#/run/R1")).toBe("run");
     expect(getRoutePage("#/unknown")).toBe("landing");
   });

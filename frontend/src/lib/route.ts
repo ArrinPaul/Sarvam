@@ -20,7 +20,11 @@ export type PageId =
   | "console"
   | "privacy"
   | "terms"
-  | "cookies";
+  | "cookies"
+  | "methodology"
+  | "architecture"
+  | "benchmarks"
+  | "pricing";
 
 export interface Route {
   runId: string | null;
@@ -43,6 +47,10 @@ export function getRoutePage(hash: string): PageId {
   if (hash.startsWith("#/privacy")) return "privacy";
   if (hash.startsWith("#/terms")) return "terms";
   if (hash.startsWith("#/cookies")) return "cookies";
+  if (hash.startsWith("#/methodology")) return "methodology";
+  if (hash.startsWith("#/architecture")) return "architecture";
+  if (hash.startsWith("#/benchmarks")) return "benchmarks";
+  if (hash.startsWith("#/pricing")) return "pricing";
   const m = RUN_ROUTE.exec(hash);
   if (m?.[1]) return "run";
   return "landing";

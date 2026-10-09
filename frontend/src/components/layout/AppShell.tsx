@@ -48,6 +48,10 @@ import { AccountPage } from "../account/AccountPage";
 import { PrivacyPolicyPage } from "../legal/PrivacyPolicyPage";
 import { TermsPage } from "../legal/TermsPage";
 import { CookiePolicyPage } from "../legal/CookiePolicyPage";
+import { ArchitecturePage } from "../pages/ArchitecturePage";
+import { BenchmarksPage } from "../pages/BenchmarksPage";
+import { MethodologyPage } from "../pages/MethodologyPage";
+import { PricingPage } from "../pages/PricingPage";
 import { CookieBanner } from "../ui/CookieBanner";
 import { useAuth } from "../../state/useAuth";
 
@@ -115,6 +119,10 @@ function Shell() {
   if (page === "privacy") return <PrivacyPolicyPage />;
   if (page === "terms") return <TermsPage />;
   if (page === "cookies") return <CookiePolicyPage />;
+  if (page === "methodology") return <MethodologyPage />;
+  if (page === "architecture") return <ArchitecturePage />;
+  if (page === "benchmarks") return <BenchmarksPage />;
+  if (page === "pricing") return <PricingPage />;
 
 
   const setTab = (t: TabId) => {
