@@ -6,7 +6,7 @@
 
 _Research that knows when it isn't done._
 
-[![Status](https://img.shields.io/badge/status-G4%20replay-green)](docs/STATUS.md)
+[![Status](https://img.shields.io/badge/status-active%20development-orange)](#project-status)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
@@ -17,7 +17,7 @@ _Research that knows when it isn't done._
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-package%20manager-000000?logo=bun&logoColor=white)
 
-[Quickstart](#quickstart) · [How it works](#how-it-works) · [Documentation](#documentation) · [Report an issue](https://github.com/AdharshJolly/Sarvam/issues)
+[Quickstart](#quickstart) · [How it works](#how-it-works) · [Documentation](#documentation) · [Report an issue](https://github.com/ArrinPaul/Sarvam/issues)
 
 </div>
 
@@ -61,6 +61,7 @@ Sarvam stops when a rule-based sufficiency policy is satisfied or a hard limit i
 - **Challenges** its own draft conclusion and runs targeted follow-up research.
 - **Stops** by explicit rules and reports a final state with a termination reason.
 - **Reports** findings that cite stored evidence IDs and carry a certainty label.
+- **Runs as a small multi-user app**: sign-up and sign-in, per-user run history and usage, an optional per-user cost quota, and an admin portal for runs, users, costs and an audit log.
 
 Four moments are always visible in the UI: the coverage matrix, independence collapse ("9 sources, 3 independent origins"), claim-to-passage drill-down, and the stop card.
 
@@ -83,7 +84,7 @@ The agent stops when a rule-based sufficiency policy is satisfied or a hard limi
 The demo replays the recorded canonical run: no API keys, no cost.
 
 ```bash
-git clone https://github.com/AdharshJolly/Sarvam.git
+git clone https://github.com/ArrinPaul/Sarvam.git
 cd Sarvam
 make demo
 ```
@@ -104,6 +105,7 @@ Open <http://localhost:5173>, choose **REPLAY** in the run form and start the pr
 | `SARVAM_SEARCH_API_KEY`                                                                    | Search provider key (Tavily by default)                                           |
 | `SARVAM_MAX_SEARCHES`, `SARVAM_MAX_FETCHES`, `SARVAM_MAX_LLM_CALLS`, `SARVAM_MAX_COST_USD` | Hard run budgets                                                                  |
 | `SARVAM_MAX_FOLLOWUP_ROUNDS`                                                               | Upper bound on follow-up research rounds                                          |
+| `SARVAM_ADMIN_EMAILS`                                                                      | Comma-separated emails that receive the admin role when they register or sign in  |
 
 The full list, with comments, is in [`.env.example`](.env.example).
 
@@ -222,7 +224,9 @@ Contracts are canonical. Never edit `contracts/generated/` by hand, and record a
 
 ## Security
 
-Fetches go through an SSRF guard: http/https only, private, loopback, link-local and metadata addresses blocked, limited redirects, timeout, size cap, HTML only. Retrieved text is treated as untrusted data and isolated from instructions; extraction and verification calls have no tools, and outputs are schema-validated. Secrets live only in environment variables. See [docs/architecture/security.md](docs/architecture/security.md) for what is implemented versus planned.
+Fetches go through an SSRF guard: http/https only, private, loopback, link-local and metadata addresses blocked, limited redirects, timeout, size cap, HTML only. Retrieved text is treated as untrusted data and isolated from instructions; extraction and verification calls have no tools, and outputs are schema-validated. Secrets live only in environment variables.
+
+Accounts use salted PBKDF2-SHA256 password hashes (100,000 iterations, fewer than current OWASP guidance recommends), random session tokens stored only as hashes with a 7-day expiry, and a six-character minimum password. Admin access comes from `SARVAM_ADMIN_EMAILS` or the seed command `uv run python -m backend.admin.seed`, which prints a random password once. There is no email verification, password reset or rate limiting on sign-in yet, so do not expose a deployment to the public internet as it stands. See [docs/architecture/security.md](docs/architecture/security.md) for what is implemented versus planned.
 
 ## Failure handling
 
@@ -236,11 +240,24 @@ Deterministic modules are tested against a 14-document fixture corpus with expec
 
 **In the MVP:** question intake, planner with slots, HTML search/fetch/extraction, passages, quote-verified claims, independent verification, origin clustering, numeric conflicts, coverage matrix, one to two challenge rounds, stop policy with reason, verified report with certainty labels, live event stream UI, hard budgets, typed failures, record/replay.
 
-**Non-goals:** proving objective truth or replacing analysts; a single opaque confidence score; enterprise search, connectors, authentication, multi-user or monitoring; infrastructure beyond SQLite and one process; agent frameworks; PDF ingestion, vector retrieval and graph visualization in the MVP.
+**Non-goals:** proving objective truth or replacing analysts; a single opaque confidence score; enterprise search, connectors, SSO or monitoring (basic accounts and an admin portal exist, but this is not an enterprise multi-tenant system); infrastructure beyond SQLite and one process; agent frameworks; PDF ingestion, vector retrieval and graph visualization in the MVP.
 
 **Roadmap:** baseline comparison against a naive single-pass run, print-ready export, full decision sensitivity, cost/latency panel, prompt-injection demo, human source pinning, PDF ingestion, run history and diff, a larger golden set, freshness flags. Ranked in SSOT section 15.
 
 ## Project status
+
+Sarvam is an active MVP built for the GATEWAYS 2026 ResearchOps challenge. The research pipeline, assurance mechanisms and UI are implemented, and the project has a record-and-replay mode so it can be demonstrated offline.
+
+| Area | State |
+| --- | --- |
+| Pipeline (plan, discover, acquire, extract, claims, verify, analyze, challenge, stop, report) | Implemented |
+| Gates G0 to G3 (offline fixture suites) | Passing |
+| Gate G4 (offline replay of the recorded run) | Tests exist but **4 of them fail** in the run documented here (replay ended `INSUFFICIENT` with no claims, with recorded fetches answered as HTTP 403 and 500). The cause was not diagnosed and could be specific to that Windows machine |
+| Accounts, quotas and admin portal | Implemented, basic |
+| Cost limit on live runs | Not enforceable on the default provider, which reports no cost (OP-02) |
+| Live runs | Every measured live run ended on the search budget (OP-03), and extraction dominates the LLM calls (OP-04) |
+
+Verified when this section was written (Windows, Python 3.12, Bun): 610 backend tests passed with 4 skipped (everything except the G4 suite), 218 frontend tests passed, and the TypeScript type check was clean. The live path was **not** re-run, since it needs search and LLM provider keys. The frontend has not been checked against a real multi-round live event stream. The full list of open problems is in [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md), and `docs/STATUS.md` is a task-by-task snapshot that may lag the code.
 
 ## Documentation
 
@@ -248,6 +265,7 @@ Deterministic modules are tested against a 14-document fixture corpus with expec
 | -------------------------------------------------------------- | ---------------------------------------- |
 | [docs/ssot/SSOT_v2.docx](docs/ssot/SSOT_v2.docx)               | Single Source of Truth (canonical)       |
 | [docs/STATUS.md](docs/STATUS.md)                               | Build status by task and gate, next plan |
+| [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md)                 | Known defects and unverified items       |
 | [docs/architecture](docs/architecture/README.md)               | Architecture as built                    |
 | [docs/architecture/security.md](docs/architecture/security.md) | Security boundaries                      |
 | [docs/decisions](docs/decisions/README.md)                     | ADRs and change log                      |
@@ -261,4 +279,4 @@ Issues and pull requests are welcome. Please read the SSOT and [CLAUDE.md](CLAUD
 
 ## License
 
-Released under the MIT License. See [LICENSE](LICENSE).
+Released under the [MIT License](LICENSE). Copyright (c) 2026 the Sarvam contributors.
