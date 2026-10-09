@@ -152,12 +152,12 @@ def test_g0_fixtures_folder_committed():
         for n in ("plan", "claims", "sources", "origins", "conflicts", "coverage")
     ]
     assert set(corpus + expected + ["fixtures/corpus/manifest.json"]) <= set(tracked)
-    # cache/ is local-only: recordings are never tracked and no placeholder is needed
-    assert not [t for t in tracked if t.startswith("cache/")]
-    ignored = subprocess.run(
-        ["git", "check-ignore", "-q", "cache/recorded/fetch-0000000000000000.json"], cwd=ROOT
-    )
-    assert ignored.returncode == 0, "cache/ must be git-ignored"
+    # CL-16: only the canonical recording (cache/recorded/) is tracked; the rest of cache/ is local
+    stray = [t for t in tracked if t.startswith("cache/") and not t.startswith("cache/recorded/")]
+    assert not stray
+    assert "cache/recorded/MANIFEST.json" in tracked
+    ignored = subprocess.run(["git", "check-ignore", "-q", "cache/scratch/local.json"], cwd=ROOT)
+    assert ignored.returncode == 0, "cache/ outside cache/recorded must be git-ignored"
     text = (ROOT / "fixtures/questions.yaml").read_text(encoding="utf-8")
     assert len(re.findall(r"^\s+- id: Q\d", text, re.M)) == 5  # SSOT 16.4: five golden questions
 
