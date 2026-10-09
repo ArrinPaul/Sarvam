@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "../../state/useAuth";
+import { postAuthDestination } from "../../lib/authRedirect";
 import { Icon } from "../ui/Icon";
 
 export function SignInPage() {
@@ -11,7 +12,7 @@ export function SignInPage() {
 
   useEffect(() => {
     if (user) {
-      const dest = sessionStorage.getItem("sarvam_auth_redirect") || "#/workspace";
+      const dest = postAuthDestination(user.role, sessionStorage.getItem("sarvam_auth_redirect"));
       sessionStorage.removeItem("sarvam_auth_redirect");
       window.location.hash = dest;
     }
@@ -23,9 +24,7 @@ export function SignInPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      const dest = sessionStorage.getItem("sarvam_auth_redirect") || "#/workspace";
-      sessionStorage.removeItem("sarvam_auth_redirect");
-      window.location.hash = dest;
+      // the effect above redirects once `user` is set, so it can route by role
     } catch {
       // error is set in auth context
     } finally {
